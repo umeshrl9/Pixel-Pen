@@ -1,3 +1,9 @@
 .main-hero{
-    background-color: rgb(255, 169, 183)
+    background-color: rgb(78, 76, 76);
+    color: white;
+    font-family: "Press Start 2P";
+}
+
+.main-hero h1{
+    color: rgb(31, 30, 30) !important;
 }
