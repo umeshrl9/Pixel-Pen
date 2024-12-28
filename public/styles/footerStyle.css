@@ -11,3 +11,11 @@ footer{
     display: flex;
     justify-content: center;
 }
+
+.socials-footer a img{
+    position: relative;
+}
+
+.socials-footer a img:hover{
+    top: -5px;
+}
