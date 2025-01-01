@@ -67,6 +67,19 @@ app.post('/edit/:id', (req, res) => {
     }
 });
 
+app.post('/delete', (req, res) => {
+    const itemId = req.body.id;
+    // Find the item and remove it
+    const index = blogs.findIndex(item => item.id === parseInt(itemId));
+
+    if (index !== -1) {
+        blogs.splice(index, 1);  // Remove item from array
+        res.render('main', { blogs: blogs });
+    } else {
+        res.status(404).send('Blog not found');
+    }
+});
+
 
 app.listen(port, () => {
     console.log("Server running on port: " + port); 

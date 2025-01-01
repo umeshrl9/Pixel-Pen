@@ -2,11 +2,16 @@
 
 <% if(blogs.length == 0) {%>
 <h1> You currently have not created a blog </h1>
-<% } %>
+<% } else{ %>
 <% blogs.forEach(blog => { %>
     <div>
         <h2><a href="/blogs/<%= blog.id %>"><%= blog.title %></a></h2>
         <p><%= blog.content.substring(0, 100) %>...</p>
         <a href="/edit/<%= blog.id %>">Edit</a>
+        <form action="/delete" method="POST" style="display:inline;">
+            <input type="hidden" name="id" value="<%= blog.id %>">
+            <button type="submit">Delete</button>
+        </form>
     </div>
 <% }) %>
+<% } %>
