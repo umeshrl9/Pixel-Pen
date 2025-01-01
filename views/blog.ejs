@@ -1,0 +1,9 @@
+<%- include("partials/header.ejs") %>
+
+<div>
+    <h2><%= blog.title %></h2>
+    <p><%= blog.content %>...</p>
+        <a href="/edit/<%= blog.id %>">Edit</a>
+</div>
+
+<%- include("partials/footer.ejs") %>   

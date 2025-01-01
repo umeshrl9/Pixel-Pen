@@ -10,6 +10,8 @@ const port = 3000;
 app.use(express.static("public"));  
 app.use(bodyParser.urlencoded({extended: true}));
 
+app.set('view engine', 'ejs');
+
 var blogs = [];
 
 app.get("/", (req, res) => {
@@ -18,7 +20,7 @@ app.get("/", (req, res) => {
 
 app.get("/main", (req, res) => {
     res.render("main.ejs", {
-        blogTitles: blogTitlesArray
+        blogs: blogs
     });
 })
 
@@ -33,9 +35,38 @@ app.post('/create', (req, res) => {
         content: req.body.content,
     };
     blogs.push(newBlog);
-    res.redirect('/'); 
-    console.log(blogs);
+    res.redirect('/main'); 
 });
+
+app.get('/blogs/:id', (req, res) => {
+    const blog = blogs.find(b => b.id == req.params.id);
+    if (blog) {
+        res.render('blog', { blog });
+    } else {
+        res.status(404).send('Blog not found');
+    }
+});
+
+app.get('/edit/:id', (req, res) => {
+    const blog = blogs.find(b => b.id == req.params.id);
+    if (blog) {
+        res.render('edit', { blog });
+    } else {
+        res.status(404).send('Blog not found');
+    }
+});
+
+app.post('/edit/:id', (req, res) => {
+    const blog = blogs.find(b => b.id == req.params.id);
+    if (blog) {
+        blog.title = req.body.title;
+        blog.content = req.body.content;
+        res.redirect('/main'); // Redirect to homepage or updated blog view
+    } else {
+        res.status(404).send('Blog not found');
+    }
+});
+
 
 app.listen(port, () => {
     console.log("Server running on port: " + port); 
