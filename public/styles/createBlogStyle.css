@@ -1,4 +1,9 @@
 .mainBody{
     background-color: rgb(78, 76, 76);
     font-family: "Press Start 2P";
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
 }
+
