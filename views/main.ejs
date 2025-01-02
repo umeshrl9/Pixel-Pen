@@ -1,17 +1,25 @@
 <%- include("partials/header.ejs") %>
 
-<% if(blogs.length == 0) {%>
-<h1> You currently have not created a blog </h1>
-<% } else{ %>
-<% blogs.forEach(blog => { %>
-    <div>
-        <h2><a href="/blogs/<%= blog.id %>"><%= blog.title %></a></h2>
-        <p><%= blog.content.substring(0, 100) %>...</p>
-        <a href="/edit/<%= blog.id %>">Edit</a>
-        <form action="/delete" method="POST" style="display:inline;">
-            <input type="hidden" name="id" value="<%= blog.id %>">
-            <button type="submit">Delete</button>
-        </form>
-    </div>
-<% }) %>
-<% } %>
+<div class="mainBody">
+<div class="container">
+    <% if(blogs.length == 0) {%>
+        <h3> You currently have not created a blog </h3>
+        <button onclick="location.href='/create'" class="btn btn-warning" type="submit">Create Blog</button>
+        <% } else{ %>
+        <% blogs.forEach(blog => { %>
+            <div class="display-blog">
+                <h2><a href="/blogs/<%= blog.id %>"><%= blog.title %></a></h2>
+                <p><%= blog.content.substring(0, 100) %>...</p>
+                <button onclick="location.href='/edit/<%= blog.id %>'" class="btn btn-light" type="submit">Edit</button>
+                <form action="/delete" method="POST" style="display:inline;">
+                    <input type="hidden" name="id" value="<%= blog.id %>">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        <% }) %>
+        <button onclick="location.href='/create'" class="btn btn-warning" type="submit">Create Blog</button>
+        <% } %>
+</div>
+</div>
+
+<%- include("partials/footer.ejs") %>

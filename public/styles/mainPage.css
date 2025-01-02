@@ -8,3 +8,15 @@
     color: white;
 }
 
+a{
+    color: aqua
+}
+
+.display-blog{
+    margin-bottom: 50px;
+}
+
+.create-blog-button{
+    background-color: rgb(78, 76, 76);
+    font-family: "Press Start 2P";
+}
