@@ -1,1 +1,1 @@
-A personal blogging app as a part of the Web Development Course by Angela Yu assignment. Tech Stack : HTML, CSS, JS, Node.js, Express.JS, EJS, Bootstrap.
+Pixel&Pen is a modern, responsive blogging platform featuring a unique pixel-themed, tech-inspired user interface. Designed to deliver a smooth and distraction-free reading and writing experience, the platform combines retro pixel aesthetics with contemporary web development practices.

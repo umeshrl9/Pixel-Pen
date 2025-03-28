@@ -12,7 +12,6 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.set('view engine', 'ejs');
 
-var blogs = [];
 
 app.get("/", (req, res) => {
     res.render("index.ejs");
