@@ -10,7 +10,4 @@ Pixel&Pen is a modern, responsive blogging platform featuring a unique pixel-the
    ```sh
    node index.js
 
-Tech Stack Used: HTML, CSS, JavaScript, Node.JS, ExpressJS, EJS, Axios
-
-
 Tech Stack Used: HTML, CSS, JS, Bootstrap, Node.JS, ExpressJS, EJS
