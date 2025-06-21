@@ -1,0 +1,57 @@
+<%- include("partials/header.ejs") %>
+
+<div class="main-hero vh-100 d-flex justify-content-center align-items-center">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="card p-4 border-0 shadow-lg" style="max-width: 450px; width: 100%; background-color: rgb(78, 76, 76); color: white; font-family: 'Press Start 2P', cursive;">
+        <h2 class="mb-4 text-center">Your Blog</h2>
+
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-3 border-0" id="authTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login"
+              type="button" role="tab" style="background-color: #4fd1c5; color: #1e1e1e; font-size: 0.7rem;">Login</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#register"
+              type="button" role="tab" style="background-color: #4fd1c5; color: #1e1e1e; font-size: 0.7rem;">Register</button>
+          </li>
+        </ul>
+
+        <div class="tab-content" id="authTabContent">
+          <!-- Login Form -->
+          <div class="tab-pane fade show active" id="login" role="tabpanel">
+            <form action="/login" method="POST">
+              <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-control bg-dark text-white border-0" name="username" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-control bg-dark text-white border-0" name="password" required>
+              </div>
+              <button type="submit" class="btn btn-info w-100">Login</button>
+            </form>
+          </div>
+
+          <!-- Register Form -->
+          <div class="tab-pane fade" id="register" role="tabpanel">
+            <form action="/register" method="POST">
+              <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-control bg-dark text-white border-0" name="username" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-control bg-dark text-white border-0" name="password" required>
+              </div>
+              <button type="submit" class="btn btn-info w-100">Register</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include("partials/footer.ejs") %>

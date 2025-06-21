@@ -7,3 +7,60 @@
 .main-hero h1{
     color: rgb(31, 30, 30) !important;
 }
+
+.main-hero {
+  background-color: rgb(78, 76, 76);
+  color: white;
+  font-family: "Press Start 2P", cursive;
+}
+
+.main-hero h1 {
+  color: rgb(31, 30, 30) !important;
+}
+
+/* Auth Page Styles */
+.auth-card {
+  background-color: #2e2e2e;
+  color: white;
+  font-family: "Press Start 2P", cursive;
+  border: 2px solid #4fd1c5;
+}
+
+.auth-card input {
+  background-color: #444;
+  color: white;
+  border: 1px solid #555;
+  font-family: inherit;
+}
+
+.auth-card input:focus {
+  background-color: #555;
+  color: #fff;
+  border-color: #4fd1c5;
+  box-shadow: 0 0 10px #4fd1c5;
+}
+
+.auth-card .btn-info {
+  background-color: #4fd1c5;
+  border: none;
+  font-family: inherit;
+  color: #1e1e1e;
+}
+
+.auth-card .btn-info:hover {
+  background-color: #38b2ac;
+  color: #fff;
+}
+
+/* Nav tab styling to match retro vibe */
+.nav-tabs .nav-link {
+  color: #ccc;
+  font-family: "Press Start 2P", cursive;
+  background-color: #333;
+  border: none;
+}
+
+.nav-tabs .nav-link.active {
+  background-color: #4fd1c5;
+  color: #1e1e1e;
+}
