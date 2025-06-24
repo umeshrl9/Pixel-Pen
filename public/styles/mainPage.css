@@ -4,12 +4,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 80vh;
+    min-height: 60vh;
     color: white;
 }
 
-a{
-    color: aqua
+a.blog-headings{
+    color: aqua !important;
 }
 
 .display-blog{
@@ -19,4 +19,33 @@ a{
 .create-blog-button{
     background-color: rgb(78, 76, 76);
     font-family: "Press Start 2P";
+}
+
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+.container {
+  max-width: 100%;
+  overflow-x: hidden;
+  padding: 0 15px;
+}
+
+.mainBody {
+  overflow-x: hidden;
+}
+
+.display-blog {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+button, form {
+  max-width: 100%;
+}
+
+* {
+  box-sizing: border-box;
 }

@@ -1,14 +1,11 @@
 <%- include("partials/header.ejs") %>
 
-<div class="mainBody">
+<div class="mainBody py-5">
     <div class="container">
         <h2><%= blog.title %></h2>
-        <p class="content-blog"><%= blog.content %>...</p>
+        <p class="content-blog" style="white-space: pre-wrap;"><%= blog.content %>...</p>
             <button onclick="location.href='/edit/<%= blog.id %>'" class="btn btn-primary">Edit</a>
     </div>
 </div>
-
-
-
 
 <%- include("partials/footer.ejs") %>   

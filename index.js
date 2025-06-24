@@ -56,8 +56,8 @@ app.get("/main", async (req, res) => {
             blogs: result.rows
         });
     } catch (err) {
-        console.log(error);
-        res.status(500).send("Error fetching blogs");
+        console.log(err);
+        res.status(500).render("message", {errorHeading: "500", message: "Error Fetching Blogs"});
     }
 });
 
@@ -87,7 +87,7 @@ app.post("/register", async (req, res) => {
         );
 
         if (existingUser.rows.length > 0) {
-            return res.send("Username already taken");
+            return res.render("message", {errorHeading: "Oh no!", message: "Username Already Taken"});
         }
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -121,10 +121,10 @@ app.post("/login", async (req, res) => {
                 req.session.userID = result.rows[0].id;
                 res.redirect("/main");
             } else {
-                return res.send("Wrong Password");
+                return res.render("message", {errorHeading: "Oh no!", message: "Wrong password"});
             }
         } else {
-            return res.send("No account exists with the given username");
+            return res.render("message", {errorHeading: "Oh no!", message: "No account exists with the given username"});
         }
     } catch (err) {
         console.log(err);
@@ -144,6 +144,8 @@ app.post('/create', async (req, res) => {
             "INSERT INTO blogs (title, content, user_id) VALUES ($1, $2, $3)",
             [title, content, req.session.userID]
         );
+
+        console.log(content);
 
         res.redirect("/main");
     } catch (err) {
@@ -166,7 +168,7 @@ app.get('/blogs/:id', async (req, res) => {
         );
 
         if (result.rows.length === 0) {
-            return res.status(404).send("Blog not found or unauthorized");
+            return res.status(404).render("message", {errorHeading: "Oh no!", message: "Blog Not Found or Unauthorized"});
         }
 
         const blog = result.rows[0];
@@ -191,7 +193,7 @@ app.get('/edit/:id', async (req, res) => {
         );
 
         if (result.rows.length === 0) {
-            return res.status(404).send("Blog not found or unauthorized");
+            return res.status(404).render("message", {errorHeading: "Oh no!", message: "Blog Not Found or Unauthorized"});
         }
 
         const blog = result.rows[0];
@@ -274,6 +276,10 @@ app.get('/logout', (req, res) => {
     }
     res.redirect('/auth');
   });
+});
+
+app.use((req, res) => {
+  res.status(404).render("message", {errorHeading: "404 - Page Not Found", message: "The page you are looking for does not exist"}); 
 });
     
 app.listen(port, () => {
