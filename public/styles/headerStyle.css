@@ -1,4 +1,10 @@
-.container li a{
-    font-family: "Press Start 2P";
-    color: yellow !important;
+.container li a {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  color: #03a9f4 !important;
+  text-decoration: none;
+}
+
+.container li a:hover {
+  color: #ffffff !important;
 }

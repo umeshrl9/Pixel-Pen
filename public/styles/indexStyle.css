@@ -1,66 +1,114 @@
-.main-hero{
-    background-color: rgb(78, 76, 76);
-    color: white;
-    font-family: "Press Start 2P";
-}
-
-.main-hero h1{
-    color: rgb(31, 30, 30) !important;
-}
-
 .main-hero {
-  background-color: rgb(78, 76, 76);
-  color: white;
-  font-family: "Press Start 2P", cursive;
+  background: linear-gradient(to right, #212121, #424242);
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
 }
 
 .main-hero h1 {
-  color: rgb(31, 30, 30) !important;
+  font-weight: 800;
+  color: #f4f4f4;
 }
 
-/* Auth Page Styles */
+.main-hero p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.hero-img {
+  max-width: 90%;
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn-primary {
+  background-color: #03a9f4;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #0288d1;
+}
+
+.btn-outline-light:hover {
+  background-color: #ffffff;
+  color: #212121;
+}
+
+@media (max-width: 767px) {
+  .main-hero {
+    text-align: center;
+    padding: 3rem 1rem;
+  }
+
+  .main-hero h1 {
+    font-size: 2rem;
+  }
+
+  .main-hero p {
+    font-size: 1rem;
+  }
+
+  .hero-img {
+    max-width: 100%;
+  }
+}
+
+/*Auth page*/
 .auth-card {
-  background-color: #2e2e2e;
-  color: white;
-  font-family: "Press Start 2P", cursive;
-  border: 2px solid #4fd1c5;
+  background: #1e1e1e;
+  color: #f4f4f4;
+  font-family: 'Poppins', sans-serif;
 }
 
-.auth-card input {
-  background-color: #444;
-  color: white;
-  border: 1px solid #555;
-  font-family: inherit;
-}
-
-.auth-card input:focus {
-  background-color: #555;
-  color: #fff;
-  border-color: #4fd1c5;
-  box-shadow: 0 0 10px #4fd1c5;
-}
-
-.auth-card .btn-info {
-  background-color: #4fd1c5;
+.tab-btn {
+  color: #f4f4f4;
+  background-color: transparent;
   border: none;
-  font-family: inherit;
-  color: #1e1e1e;
+  font-weight: 600;
+  font-size: 1rem;
+  border-bottom: 2px solid transparent;
+  transition: 0.3s;
 }
 
-.auth-card .btn-info:hover {
-  background-color: #38b2ac;
-  color: #fff;
+.tab-btn.active {
+  border-color: #03a9f4;
+  color: #03a9f4;
 }
 
-/* Nav tab styling to match retro vibe */
-.nav-tabs .nav-link {
-  color: #ccc;
-  font-family: "Press Start 2P", cursive;
-  background-color: #333;
+.tab-btn:hover {
+  color: #03a9f4;
+}
+
+.form-field {
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+}
+
+.btn-primary {
+  background-color: #03a9f4;
   border: none;
 }
 
-.nav-tabs .nav-link.active {
-  background-color: #4fd1c5;
-  color: #1e1e1e;
+.btn-primary:hover {
+  background-color: #0288d1;
+  border: none;
+}
+
+.btn-light {
+  background-color: #ffffff;
+  color: #212121;
+}
+
+.btn-light:hover {
+  background-color: #f4f4f4;
+}
+
+@media (max-width: 576px) {
+  .auth-card {
+    padding: 2rem;
+  }
+
+  .tab-btn {
+    font-size: 0.9rem;
+  }
 }

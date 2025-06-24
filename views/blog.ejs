@@ -1,11 +1,17 @@
 <%- include("partials/header.ejs") %>
 
-<div class="mainBody py-5">
-    <div class="container">
-        <h2><%= blog.title %></h2>
-        <p class="content-blog" style="white-space: pre-wrap;"><%= blog.content %>...</p>
-            <button onclick="location.href='/edit/<%= blog.id %>'" class="btn btn-primary">Edit</a>
+<div class="mainBody min-vh-100 d-flex justify-content-center align-items-center py-5">
+  <div class="container" style="max-width: 800px;">
+    <div class="card text-bg-dark border-0 shadow-lg p-4">
+      <h2 class="mb-4 text-center"><%= blog.title %></h2>
+      <p class="content-blog mb-4" style="white-space: pre-wrap; font-size: 1rem; line-height: 1.8; color: #ddd;"><%= blog.content %></p>
+
+      <div class="d-flex justify-content-between">
+        <a href="/edit/<%= blog.id %>" class="btn btn-info">Edit Blog</a>
+        <a href="/main" class="btn btn-secondary">Back to Main</a>
+      </div>
     </div>
+  </div>
 </div>
 
-<%- include("partials/footer.ejs") %>   
+<%- include("partials/footer.ejs") %>

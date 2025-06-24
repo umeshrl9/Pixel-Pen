@@ -1,21 +1,30 @@
-footer{
-    font-family: "Press Start 2P"
+footer {
+  font-family: 'Poppins', sans-serif;
+  text-align: center;
+  padding-top: 30px;
+  background-color: #212121;
+  color: #f4f4f4;
 }
 
-footer{
-    text-align: center;
-    padding-top: 30px;
+footer a {
+  color: #03a9f4;
+  text-decoration: none;
 }
 
-.final{
-    display: flex;
-    justify-content: center;
+footer a:hover {
+  color: #ffffff;
 }
 
-.socials-footer a img{
-    position: relative;
+.final {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
 }
 
-.socials-footer a img:hover{
-    top: -5px;
+.socials-footer a img {
+  transition: all 0.3s ease;
+}
+
+.socials-footer a img:hover {
+  transform: translateY(-5px);
 }

@@ -1,21 +1,24 @@
 <%- include("partials/header.ejs") %>
 
-<div class="main-hero ">
+<div class="main-hero py-5">
   <div class="container">
-    <div class="row p-4 pb-0 pe-lg-0 pt-lg-5 align-items-center shadow-lg">
-      <div class="col-lg-7 p-3 p-lg-5 pt-lg-3">
-        <h1 class="display-4 fw-bold lh-1 text-body-emphasis">Your personal blogging site!</h1>
-        <p class="lead" style="text-align: justify; font-size: 1rem;">Welcome to your personal blogging platform, built for simplicity and ease of use. Whether you're penning down daily thoughts or exploring creative ideas, our minimalist design lets you focus on what matters most: your words. No frills, just your blog, your way.</p>
-        <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-4 mb-lg-3">
-          <a href="/auth" class = "btn btn-info btn-lg px-4 me-md-2 fw-bold">Let's start</a>
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6 text-center text-lg-start">
+        <h1 class="display-3 fw-bold mb-4">Pixel & Pen</h1>
+        <p class="lead mb-4">
+          A personal, distraction-free blogging space built for simplicity.
+          Share your ideas, stories, and thoughts effortlessly.
+        </p>
+        <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
+          <a href="/auth" class="btn btn-primary btn-lg px-4">Get Started</a>
+          <a href="https://github.com/umeshrl9" class="btn btn-outline-light btn-lg px-4">View on GitHub</a>
         </div>
       </div>
-      <div class="col-lg-4 offset-lg-1 p-0 overflow-hidden shadow-lg">
-          <img class="rounded-lg-3" src="/images/iphone-1852901_1920.jpg" alt="" width="720">
+      <div class="col-lg-6 text-center">
+        <img src="/images/iphone-1852901_1920.jpg" alt="App Preview" class="hero-img img-fluid rounded-4 shadow-lg" />
       </div>
     </div>
   </div>
-    
 </div>
 
 <%- include("partials/footer.ejs") %>

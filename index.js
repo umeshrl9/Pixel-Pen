@@ -145,8 +145,6 @@ app.post('/create', async (req, res) => {
             [title, content, req.session.userID]
         );
 
-        console.log(content);
-
         res.redirect("/main");
     } catch (err) {
         console.log(err);
