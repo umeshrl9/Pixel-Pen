@@ -5,6 +5,7 @@
     <% if(blogs.length == 0) {%>
         <h3> You currently have not created a blog </h3>
         <button onclick="location.href='/create'" class="btn btn-warning" type="submit">Create Blog</button>
+        <button onclick="location.href='/logout'" class="btn btn-dark" type="submit">Logout</button>
         <% } else{ %>
         <% blogs.forEach(blog => { %>
             <div class="display-blog">
@@ -18,6 +19,7 @@
             </div>
         <% }) %>
         <button onclick="location.href='/create'" class="btn btn-warning" type="submit">Create Blog</button>
+        <button onclick="location.href='/logout'" class="btn btn-dark" type="submit">Logout</button>
         <% } %>
 </div>
 </div>
