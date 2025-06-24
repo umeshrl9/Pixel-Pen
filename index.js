@@ -6,7 +6,7 @@ import session from "express-session";
 import bcrypt from "bcryptjs";
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 dotenv.config();
 
 app.use(session({
@@ -280,6 +280,7 @@ app.use((req, res) => {
   res.status(404).render("message", {errorHeading: "404 - Page Not Found", message: "The page you are looking for does not exist"}); 
 });
     
+
 app.listen(port, () => {
-    console.log("Server running on port: " + port);
+  console.log(`Server running on port ${port}`);
 });
