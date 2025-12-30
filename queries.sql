@@ -1,8 +1,12 @@
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
-  username TEXT NOT NULL UNIQUE,
-  password TEXT NOT NULL
+  username TEXT UNIQUE,
+  email TEXT UNIQUE,
+  password TEXT,
+  google_id TEXT UNIQUE,
+  auth_provider TEXT NOT NULL DEFAULT 'local'
 );
+
 
 CREATE TABLE blogs (
   id SERIAL PRIMARY KEY,
