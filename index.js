@@ -2,22 +2,13 @@ import express from "express";
 import bodyParser from "body-parser";
 import pg from "pg";
 import dotenv from "dotenv";
-import session from "express-session";
+import jwt from "jsonwebtoken";
+import cookieParser from "cookie-parser";
 import bcrypt from "bcryptjs";
 
 const app = express();
-const port = process.env.PORT || 3000;
 dotenv.config();
-
-app.use(session({
-    secret: process.env.SECRET_KEY,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        secure: false,
-        maxAge: 24 * 60 * 60 * 1000
-    }
-}))
+const port = process.env.PORT || 3000;
 
 const { Pool } = pg;
 const pool = new Pool({
@@ -33,48 +24,29 @@ const pool = new Pool({
 
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.set('view engine', 'ejs');
 
+const authenticateToken = (req, res, next) => {
+    const token = req.cookies.token;
 
-app.get("/", (req, res) => {
-    res.render("index.ejs");
-});
-
-app.get("/main", async (req, res) => {
-    if (!req.session.userID) {
+    if (!token) {
         return res.redirect("/auth");
     }
 
     try {
-        const result = await pool.query(
-            "SELECT * FROM blogs WHERE user_id = $1 ORDER BY id DESC",
-            [req.session.userID]
-        );
-
-        res.render("main.ejs", {
-            blogs: result.rows
-        });
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.userId = decoded.userId;
+        next();
     } catch (err) {
-        console.log(err);
-        res.status(500).render("message", {errorHeading: "500", message: "Error Fetching Blogs"});
-    }
-});
-
-app.get("/create", (req, res) => {
-    if (!req.session.userID) {
         return res.redirect("/auth");
     }
+};
 
-    res.render("createBlog.ejs");
-});
 
-app.get("/auth", (req, res) => {
-    if (!req.session.userID) {
-        res.render("auth.ejs");
-    } else {
-        res.redirect("/main");
-    }
+app.get("/", (req, res) => {
+    res.render("index.ejs");
 });
 
 app.post("/register", async (req, res) => {
@@ -87,7 +59,7 @@ app.post("/register", async (req, res) => {
         );
 
         if (existingUser.rows.length > 0) {
-            return res.render("message", {errorHeading: "Oh no!", message: "Username Already Taken"});
+            return res.render("message", { errorHeading: "Oh no!", message: "Username Already Taken" });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -96,11 +68,22 @@ app.post("/register", async (req, res) => {
             [username, hashedPassword]
         );
 
-        req.session.userID = result.rows[0].id;
+        const token = jwt.sign({ userId: result.rows[0].id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        });
+
         res.redirect("/main");
     } catch (err) {
         console.log(err);
-        res.redirect("/auth");
+        res.render("message", {
+            errorHeading: "Server Error",
+            message: "Something went wrong. Please try again later."
+        });
     }
 });
 
@@ -118,31 +101,58 @@ app.post("/login", async (req, res) => {
             const isMatch = await bcrypt.compare(password, storedHash);
 
             if (isMatch) {
-                req.session.userID = result.rows[0].id;
+                const token = jwt.sign({userId: result.rows[0].id}, process.env.JWT_SECRET, {expiresIn: "7d"});
+                
+                res.cookie("token", token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === "production",
+                    sameSite: "lax",
+                    maxAge: 7 * 24 * 60 * 60 * 1000
+                });
+
                 res.redirect("/main");
             } else {
-                return res.render("message", {errorHeading: "Oh no!", message: "Wrong password"});
+                return res.render("message", { errorHeading: "Oh no!", message: "Wrong password" });
             }
         } else {
-            return res.render("message", {errorHeading: "Oh no!", message: "No account exists with the given username"});
+            return res.render("message", { errorHeading: "Oh no!", message: "No account exists with the given username" });
         }
     } catch (err) {
         console.log(err);
-        res.redirect("/auth");
+        res.render("message", {
+            errorHeading: "Server Error",
+            message: "Something went wrong. Please try again later."
+        });
     }
 })
 
-app.post('/create', async (req, res) => {
-    if (!req.session.userID) {
-        return res.redirect("/auth");
-    }
+app.get("/main", authenticateToken, async (req, res) => {
+    try {
+        const result = await pool.query(
+            "SELECT * FROM blogs WHERE user_id = $1 ORDER BY id DESC",
+            [req.userId]
+        );
 
+        res.render("main.ejs", {
+            blogs: result.rows
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).render("message", { errorHeading: "500", message: "Error Fetching Blogs" });
+    }
+});
+
+app.get("/create", authenticateToken, (req, res) => {
+    res.render("createBlog.ejs");
+});
+
+app.post('/create', authenticateToken, async (req, res) => {
     const { title, content } = req.body;
 
     try {
         await pool.query(
             "INSERT INTO blogs (title, content, user_id) VALUES ($1, $2, $3)",
-            [title, content, req.session.userID]
+            [title, content, req.userId]
         );
 
         res.redirect("/main");
@@ -152,21 +162,17 @@ app.post('/create', async (req, res) => {
     }
 });
 
-app.get('/blogs/:id', async (req, res) => {
-    if (!req.session.userID) {
-        return res.redirect("/auth");
-    }
-
+app.get('/blogs/:id', authenticateToken, async (req, res) => {
     const blogID = req.params.id;
 
     try {
         const result = await pool.query(
             "SELECT * FROM blogs WHERE id = $1 AND user_id = $2",
-            [blogID, req.session.userID]
+            [blogID, req.userId]
         );
 
         if (result.rows.length === 0) {
-            return res.status(404).render("message", {errorHeading: "Oh no!", message: "Blog Not Found or Unauthorized"});
+            return res.status(404).render("message", { errorHeading: "Oh no!", message: "Blog Not Found or Unauthorized" });
         }
 
         const blog = result.rows[0];
@@ -177,21 +183,17 @@ app.get('/blogs/:id', async (req, res) => {
     }
 });
 
-app.get('/edit/:id', async (req, res) => {
-    if (!req.session.userID) {
-        return res.redirect("/auth");
-    }
-
+app.get('/edit/:id', authenticateToken, async (req, res) => {
     const blogID = req.params.id;
 
     try {
         const result = await pool.query(
             "SELECT * FROM blogs WHERE id = $1 AND user_id = $2",
-            [blogID, req.session.userID]
+            [blogID, req.userId]
         );
 
         if (result.rows.length === 0) {
-            return res.status(404).render("message", {errorHeading: "Oh no!", message: "Blog Not Found or Unauthorized"});
+            return res.status(404).render("message", { errorHeading: "Oh no!", message: "Blog Not Found or Unauthorized" });
         }
 
         const blog = result.rows[0];
@@ -200,22 +202,16 @@ app.get('/edit/:id', async (req, res) => {
         console.error(err);
         res.status(500).send("Server error while fetching blog for edit");
     }
-
-
 });
 
-app.post('/edit/:id', async (req, res) => {
-    if (!req.session.userID) {
-        return res.redirect("/auth");
-    }
-
+app.post('/edit/:id', authenticateToken, async (req, res) => {
     const blogID = req.params.id;
     const { title, content } = req.body;
 
     try {
         const result = await pool.query(
             "SELECT * FROM blogs WHERE id = $1 AND user_id = $2",
-            [blogID, req.session.userID]
+            [blogID, req.userId]
         );
 
         if (result.rows.length === 0) {
@@ -224,7 +220,7 @@ app.post('/edit/:id', async (req, res) => {
 
         await pool.query(
             "UPDATE blogs SET title = $1, content = $2 WHERE id = $3 AND user_id = $4",
-            [title, content, blogID, req.session.userID]
+            [title, content, blogID, req.userId]
         );
 
         res.redirect('/main');
@@ -234,18 +230,14 @@ app.post('/edit/:id', async (req, res) => {
     }
 });
 
-app.post('/delete', async (req, res) => {
-    if (!req.session.userID) {
-        return res.redirect("/auth");
-    }
-
+app.post('/delete', authenticateToken, async (req, res) => {
     const blogID = req.body.id;
 
     try {
         // Check if the blog exists and belongs to the current user
         const result = await pool.query(
             "SELECT * FROM blogs WHERE id = $1 AND user_id = $2",
-            [blogID, req.session.userID]
+            [blogID, req.userId]
         );
 
         if (result.rows.length === 0) {
@@ -255,7 +247,7 @@ app.post('/delete', async (req, res) => {
         // Delete the blog from the database
         await pool.query(
             "DELETE FROM blogs WHERE id = $1 AND user_id = $2",
-            [blogID, req.session.userID]
+            [blogID, req.userId]
         );
 
         res.redirect("/main");
@@ -266,21 +258,25 @@ app.post('/delete', async (req, res) => {
     }
 });
 
-app.get('/logout', (req, res) => {
-  req.session.destroy(err => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send("Error logging out");
+app.get("/auth", (req, res) => {
+    const token = req.cookies.token;
+    if(token){
+        return res.redirect("/main");
     }
-    res.redirect('/auth');
-  });
+    res.render("auth.ejs");
+});
+
+
+app.get('/logout', (req, res) => {
+    res.clearCookie("token");
+    res.redirect("/auth");
 });
 
 app.use((req, res) => {
-  res.status(404).render("message", {errorHeading: "404 - Page Not Found", message: "The page you are looking for does not exist"}); 
+    res.status(404).render("message", { errorHeading: "404 - Page Not Found", message: "The page you are looking for does not exist" });
 });
-    
+
 
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+    console.log(`Server running on port ${port}`);
 });
