@@ -1,59 +1,72 @@
 <%- include("partials/header.ejs") %>
 
-<div class="main-hero min-vh-100 d-flex justify-content-center align-items-center">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="card p-5 border-0 shadow-lg rounded-4 auth-card" style="max-width: 420px; background-color: #1e1e1e; color: #f4f4f4;">
+  <div class="main-hero min-vh-100 d-flex justify-content-center align-items-center">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="card p-5 border-0 shadow-lg rounded-4 auth-card"
+          style="max-width: 420px; background-color: #1e1e1e; color: #f4f4f4;">
 
-        <h2 class="mb-4 text-center fw-bold">Pixel & Pen</h2>
+          <h2 class="mb-4 text-center fw-bold">Pixel & Pen</h2>
 
-        <!-- Tabs -->
-        <ul class="nav nav-tabs mb-4 border-0 justify-content-center" id="authTab" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link active tab-btn" id="login-tab" data-bs-toggle="tab" data-bs-target="#login"
-              type="button" role="tab">Login</button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link tab-btn" id="register-tab" data-bs-toggle="tab" data-bs-target="#register"
-              type="button" role="tab">Register</button>
-          </li>
-        </ul>
+          <!-- Tabs -->
+          <ul class="nav nav-tabs mb-4 border-0 justify-content-center" id="authTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active tab-btn" id="login-tab" data-bs-toggle="tab" data-bs-target="#login"
+                type="button" role="tab">Login</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link tab-btn" id="register-tab" data-bs-toggle="tab" data-bs-target="#register"
+                type="button" role="tab">Register</button>
+            </li>
+          </ul>
 
-        <div class="tab-content" id="authTabContent">
-          <!-- Login Form -->
-          <div class="tab-pane fade show active" id="login" role="tabpanel">
-            <form action="/login" method="POST">
-              <div class="mb-3">
-                <label class="form-label">Username</label>
-                <input type="text" class="form-control bg-dark text-white border-0 form-field" name="username" required>
-              </div>
-              <div class="mb-4">
-                <label class="form-label">Password</label>
-                <input type="password" class="form-control bg-dark text-white border-0 form-field" name="password" required>
-              </div>
-              <button type="submit" class="btn btn-primary w-100">Login</button>
-            </form>
+          <div class="tab-content" id="authTabContent">
+            <!-- Login Form -->
+            <div class="tab-pane fade show active" id="login" role="tabpanel">
+              <form action="/login" method="POST">
+                <div class="mb-3">
+                  <label class="form-label">Username</label>
+                  <input type="text" class="form-control bg-dark text-white border-0 form-field" name="username"
+                    required>
+                </div>
+                <div class="mb-4">
+                  <label class="form-label">Password</label>
+                  <input type="password" class="form-control bg-dark text-white border-0 form-field" name="password"
+                    required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+              </form>
+            </div>
+
+            <!-- Register Form -->
+            <div class="tab-pane fade" id="register" role="tabpanel">
+              <form action="/register" method="POST">
+                <div class="mb-3">
+                  <label class="form-label">Username</label>
+                  <input type="text" class="form-control bg-dark text-white border-0 form-field" name="username"
+                    required>
+                </div>
+                <div class="mb-4">
+                  <label class="form-label">Password</label>
+                  <input type="password" class="form-control bg-dark text-white border-0 form-field" name="password"
+                    required>
+                </div>
+                <button type="submit" class="btn btn-light w-100">Register</button>
+              </form>
+            </div>
           </div>
 
-          <!-- Register Form -->
-          <div class="tab-pane fade" id="register" role="tabpanel">
-            <form action="/register" method="POST">
-              <div class="mb-3">
-                <label class="form-label">Username</label>
-                <input type="text" class="form-control bg-dark text-white border-0 form-field" name="username" required>
-              </div>
-              <div class="mb-4">
-                <label class="form-label">Password</label>
-                <input type="password" class="form-control bg-dark text-white border-0 form-field" name="password" required>
-              </div>
-              <button type="submit" class="btn btn-light w-100">Register</button>
-            </form>
+          <hr class="my-4">
+
+          <div class="d-grid gap-2">
+            <a href="/auth/google" class="btn btn-danger">
+              <i class="bi bi-google me-2"></i> Continue with Google
+            </a>
           </div>
+
         </div>
-
       </div>
     </div>
   </div>
-</div>
 
-<%- include("partials/footer.ejs") %>
+  <%- include("partials/footer.ejs") %>
