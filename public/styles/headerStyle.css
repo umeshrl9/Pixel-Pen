@@ -1,10 +1,30 @@
-.container li a {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 600;
-  color: #03a9f4 !important;
-  text-decoration: none;
+.site-header {
+  background-color: #fafafa;
+  border-bottom: 1px solid #eee;
+  padding: 1.2rem 0;
 }
 
-.container li a:hover {
-  color: #ffffff !important;
+.header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.brand {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #111;
+  text-decoration: none;
+  letter-spacing: 0.5px;
+}
+
+.brand span {
+  font-weight: 600;
+  margin: 0 0.2rem;
+  color: #666;
+}
+
+.brand:hover {
+  color: #000;
 }

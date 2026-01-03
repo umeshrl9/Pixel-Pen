@@ -1,24 +1,100 @@
 <%- include("partials/header.ejs") %>
 
-<div class="main-hero py-5">
-  <div class="container">
-    <div class="row align-items-center g-5">
-      <div class="col-lg-6 text-center text-lg-start">
-        <h1 class="display-3 fw-bold mb-4">Pixel & Pen</h1>
-        <p class="lead mb-4">
-          A personal, distraction-free blogging space built for simplicity.
-          Share your ideas, stories, and thoughts effortlessly.
-        </p>
-        <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
-          <a href="/auth" class="btn btn-primary btn-lg px-4">Get Started</a>
-          <a href="https://github.com/umeshrl9" class="btn btn-outline-light btn-lg px-4">View on GitHub</a>
-        </div>
+<!-- HERO -->
+<section class="home-hero">
+  <div class="home-inner">
+    <div class="home-text">
+      <h1>Pixel & Pen</h1>
+      <p>
+        A calm, personal space to write, reflect, and share your thoughts —
+        without distractions.
+      </p>
+
+      <div class="home-actions">
+        <a href="/auth" class="btn-primary">Get started</a>
+        <a href="https://github.com/umeshrl9" class="btn-secondary">
+          View on GitHub
+        </a>
       </div>
-      <div class="col-lg-6 text-center">
-        <img src="/images/iphone-1852901_1920.jpg" alt="App Preview" class="hero-img img-fluid rounded-4 shadow-lg" />
+    </div>
+
+    <div class="home-visual">
+      <img src="/images/iphone-1852901_1920.jpg" alt="Pixel & Pen preview" />
+    </div>
+  </div>
+</section>
+
+<!-- Why section -->
+<section class="home-section">
+  <div class="section-inner">
+    <h2>Why Pixel & Pen?</h2>
+    <p>
+      Writing deserves focus. Pixel & Pen is built to remove noise, reduce
+      friction, and give you a space that feels personal — like opening a
+      notebook, not a dashboard.
+    </p>
+  </div>
+</section>
+
+<!-- Experience section -->
+<section class="home-section subtle">
+  <div class="section-inner two-col">
+    <div class="feature-text d-flex flex-column align-items-center text-center">
+      <i class="bi bi-layout-text-window-reverse feature-icon-sm"></i>
+      <h3>Designed for clarity</h3>
+      <p>
+        Clean typography, comfortable spacing, and a reading-first layout help
+        your thoughts flow naturally — whether you’re journaling or publishing.
+      </p>
+    </div>
+
+    <div class="feature-text d-flex flex-column align-items-center text-center">
+      <i class="bi bi-feather feature-icon-sm"></i>
+      <h3>Write without pressure</h3>
+      <p>
+        No likes, no metrics, no unnecessary clutter. Just you and your words,
+        saved securely and accessible anytime.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="home-section">
+  <div class="section-inner">
+    <h2>What you can do</h2>
+
+    <div class="feature-grid">
+      <div class="feature">
+        <i class="bi bi-pencil-square feature-icon"></i>
+        <h4>Write freely</h4>
+        <p>Create and edit posts in a distraction-free editor.</p>
+      </div>
+
+      <div class="feature">
+        <i class="bi bi-lock feature-icon"></i>
+        <h4>Private by default</h4>
+        <p>Your writing stays yours unless you choose to share.</p>
+      </div>
+
+      <div class="feature">
+        <i class="bi bi-phone feature-icon"></i>
+        <h4>Fully responsive</h4>
+        <p>Write and read comfortably on any device.</p>
       </div>
     </div>
   </div>
-</div>
+</section>
+
+<!-- Closing CTA -->
+<section class="home-cta">
+  <div class="cta-inner">
+    <h2>Start writing today</h2>
+    <p>
+      Create your space, pick up your pen, and let your thoughts take shape.
+    </p>
+    <a href="/auth" class="btn-primary">Create your account</a>
+  </div>
+</section>
 
 <%- include("partials/footer.ejs") %>
