@@ -1,17 +1,79 @@
-<%- include("partials/header.ejs") %>
+<%- include("partials/header", { title: blog.title + " | Pixel & Pen" , css: ["/styles/blog.css"] }) %>
 
-<div class="mainBody min-vh-100 d-flex justify-content-center align-items-center py-5">
-  <div class="container" style="max-width: 800px;">
-    <div class="card text-bg-dark border-0 shadow-lg p-4">
-      <h2 class="mb-4 text-center"><%= blog.title %></h2>
-      <p class="content-blog mb-4" style="white-space: pre-wrap; font-size: 1rem; line-height: 1.8; color: #ddd;"><%= blog.content %></p>
+  <article class="reading-page">
+    <div class="reading-inner">
 
-      <div class="d-flex justify-content-between">
-        <a href="/edit/<%= blog.id %>" class="btn btn-info">Edit Blog</a>
-        <a href="/main" class="btn btn-secondary">Back to Main</a>
+      <!-- Back -->
+      <div class="reading-nav">
+        <a href="/main" class="back-link">
+          <i class="bi bi-arrow-left"></i> Back to writing
+        </a>
       </div>
-    </div>
-  </div>
-</div>
 
-<%- include("partials/footer.ejs") %>
+      <!-- Title -->
+      <h1 class="reading-title">
+        <%= blog.title %>
+      </h1>
+
+      <!-- Content -->
+      <div class="reading-content" style="white-space: pre-wrap;"><%= blog.content %></div>
+
+      <!-- Actions -->
+      <div class="reading-actions">
+        <a href="/edit/<%= blog.id %>" class="btn-primary">
+          <i class="bi bi-pencil"></i> Edit
+        </a>
+
+        <button class="btn-danger" id="openDeleteModal">
+          <i class="bi bi-trash"></i> Delete
+        </button>
+      </div>
+
+      <!-- Delete Modal -->
+      <div class="delete-modal" id="deleteModal">
+        <div class="delete-modal-card">
+          <h3>Delete Blog?</h3>
+          <p>
+            This action is permanent.<br>
+            Your blog will be deleted forever.
+          </p>
+
+          <div class="delete-actions">
+            <button class="btn-outline" id="cancelDelete">Cancel</button>
+
+            <form action="/delete" method="POST">
+              <input type="hidden" name="id" value="<%= blog.id %>">
+              <button type="submit" class="btn-danger">
+                Yes, Delete
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </article>
+
+  <script>
+    const openBtn = document.getElementById("openDeleteModal");
+    const modal = document.getElementById("deleteModal");
+    const cancelBtn = document.getElementById("cancelDelete");
+
+    openBtn.addEventListener("click", () => {
+      modal.style.display = "flex";
+    });
+
+    cancelBtn.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        modal.style.display = "none";
+      }
+    });
+  </script>
+
+
+  <%- include("partials/footer") %>

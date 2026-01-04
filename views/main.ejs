@@ -1,44 +1,111 @@
-<%- include("partials/header.ejs") %>
+<%- include("partials/header", { title: "Your writings | Pixel & Pen" , css: ["/styles/mainPage.css"] }) %>
 
-<div class="mainBody py-5">
-  <div class="container">
-    <% if(blogs.length == 0) { %>
-      <div class="text-center py-5">
-        <h3 class="mb-4">You haven’t created a blog yet</h3>
-        <button onclick="location.href='/create'" class="btn btn-primary me-2">Create Blog</button>
-        <button onclick="location.href='/logout'" class="btn btn-outline-light">Logout</button>
+  <section class="dashboard">
+    <div class="dashboard-inner">
+
+      <!-- Header -->
+      <div class="dashboard-header">
+        <div>
+          <h1>Your writings</h1>
+          <p>All your writings and thoughts!</p>
+        </div>
+
+        <div class="dashboard-actions">
+          <a href="/create" class="btn-primary"></i>New post</a>
+          <a href="/logout" class="btn-secondary">Logout</a>
+        </div>
       </div>
-    <% } else { %>
 
-      <div class="row g-4">
-        <% blogs.forEach(blog => { %>
-          <div class="col-lg-4 col-md-6">
-            <div class="card h-100 text-bg-dark shadow-lg border-0">
-              <div class="card-body d-flex flex-column">
-                <h3 class="card-title mb-3">
-                  <a class="text-decoration-none text-info" href="/blogs/<%= blog.id %>"><%= blog.title %></a>
-                </h3>
-                <p class="card-text flex-grow-1" style="white-space: pre-wrap;"><%= blog.content.substring(0, 150) %>...</p>
-                <div class="mt-3 d-flex justify-content-between">
-                  <button onclick="location.href='/edit/<%= blog.id %>'" class="btn btn-sm btn-outline-light">Edit</button>
-                  <form action="/delete" method="POST" style="display:inline;">
-                    <input type="hidden" name="id" value="<%= blog.id %>">
-                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                  </form>
+      <% if (blogs.length===0) { %>
+        <!-- Empty state -->
+        <div class="empty-state">
+          <i class="bi bi-journal-text"></i>
+          <h3>No posts yet</h3>
+          <p>Start your first entry and let your ideas take shape.</p>
+          <a href="/create" class="btn-primary">Write your first post</a>
+        </div>
+        <% } else { %>
+
+          <!-- Blog list -->
+          <div class="blog-list">
+            <% blogs.forEach(blog=> { %>
+              <article class="blog-card">
+                <h2>
+                  <a href="/blogs/<%= blog.id %>">
+                    <%= blog.title %>
+                  </a>
+                </h2>
+
+                <p class="excerpt">
+                  <%= blog.content.substring(0, 300) %>…
+                </p>
+
+
+                <div class="blog-actions">
+                  <a href="/edit/<%= blog.id %>" class="action-link">
+                    <i class="bi bi-pencil"></i> Edit
+                  </a>
+
+                  <button class="action-link danger openDeleteModal" data-blogid="<%= blog.id %>">
+                    <i class="bi bi-trash"></i> Delete
+                  </button>
                 </div>
+
+              </article>
+
+              <% }) %>
+          </div>
+
+          <!-- Single Delete Modal -->
+          <div class="delete-modal" id="deleteModal">
+            <div class="delete-modal-card">
+              <h3>Delete Blog?</h3>
+              <p>
+                This action is permanent.<br>
+                Your blog will be deleted forever.
+              </p>
+
+              <div class="delete-actions">
+                <button class="btn-outline" id="cancelDelete">Cancel</button>
+
+                <form id="deleteForm" action="/delete" method="POST">
+                  <input type="hidden" name="id" id="deleteBlogId">
+                  <button type="submit" class="btn-danger">
+                    Yes, Delete
+                  </button>
+                </form>
               </div>
             </div>
           </div>
-        <% }) %>
-      </div>
 
-      <div class="text-center mt-5">
-        <button onclick="location.href='/create'" class="btn btn-primary me-2">Create Blog</button>
-        <button onclick="location.href='/logout'" class="btn btn-outline-light">Logout</button>
-      </div>
+          <% } %>
+    </div>
+  </section>
 
-    <% } %>
-  </div>
-</div>
+  <script>
+    const openBtns = document.querySelectorAll(".openDeleteModal");
+    const modal = document.getElementById("deleteModal");
+    const cancelBtn = document.getElementById("cancelDelete");
+    const deleteBlogIdInput = document.getElementById("deleteBlogId");
 
-<%- include("partials/footer.ejs") %>
+    openBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const blogId = btn.dataset.blogid;
+        deleteBlogIdInput.value = blogId; // set the id in the hidden input
+        modal.style.display = "flex";
+      });
+    });
+
+    cancelBtn.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        modal.style.display = "none";
+      }
+    });
+
+  </script>
+
+  <%- include("partials/footer") %>
