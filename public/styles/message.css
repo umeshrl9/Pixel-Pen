@@ -1,0 +1,52 @@
+.error-page {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.2rem;
+  background: #ffffff;
+}
+
+.error-inner {
+  max-width: 520px;
+  text-align: center;
+}
+
+/* Icon */
+.error-icon {
+  font-size: 2.8rem;
+  color: #d32f2f;
+  margin-bottom: 1.2rem;
+}
+
+/* Heading */
+.error-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 4vw, 2.6rem);
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 1rem;
+}
+
+/* Message */
+.error-message {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #555;
+  margin-bottom: 2rem;
+}
+
+/* Button */
+.btn-primary {
+  display: inline-block;
+  padding: 0.65rem 1.8rem;
+  border-radius: 999px;
+}
+
+/* Subtle motion */
+@media (hover: hover) {
+  .btn-primary:hover {
+    transform: translateY(-1px);
+  }
+}

@@ -1,31 +1,55 @@
-<%- include("partials/header.ejs") %>
+<%- include("partials/header", {
+  title: "Edit post | Pixel & Pen",
+  css: ["/styles/editBlog.css"]
+}) %>
 
-<div class="mainBody min-vh-100 d-flex justify-content-center align-items-center py-5">
-  <div class="container" style="max-width: 600px;">
-    <div class="card text-bg-dark border-0 shadow-lg p-4">
-      <h2 class="text-center mb-4">Edit Blog</h2>
+<section class="editor-page">
+  <div class="editor-inner">
 
-      <form action="/edit/<%= blog.id %>" method="POST">
-        <!-- Blog Title -->
-        <div class="mb-3">
-          <label for="title" class="form-label">Title</label>
-          <input type="text" id="title" name="title" class="form-control bg-dark text-white border-0" value="<%= blog.title %>" required>
-        </div>
-
-        <!-- Blog Content -->
-        <div class="mb-4">
-          <label for="content" class="form-label">Content</label>
-          <textarea id="content" name="content" class="form-control bg-dark text-white border-0" rows="8" required><%= blog.content %></textarea>
-        </div>
-
-        <!-- Buttons -->
-        <div class="d-flex justify-content-between">
-          <button type="submit" class="btn btn-info">Save Changes</button>
-          <a href="/main" class="btn btn-danger">Cancel</a>
-        </div>
-      </form>
+    <div class="editor-header">
+      <h1>Edit post</h1>
+      <p>Refine your thoughts and make them clearer.</p>
     </div>
-  </div>
-</div>
 
-<%- include("partials/footer.ejs") %>
+    <form action="/edit/<%= blog.id %>" method="POST" class="editor-form">
+
+      <!-- Title -->
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input
+          id="title"
+          type="text"
+          name="title"
+          value="<%= blog.title %>"
+          required
+        />
+      </div>
+
+      <!-- Content -->
+      <div class="form-group">
+        <label for="content">Content</label>
+        <textarea
+          id="content"
+          name="content"
+          rows="10"
+          required
+        ><%= blog.content %></textarea>
+      </div>
+
+      <!-- Actions -->
+      <div class="editor-actions">
+        <button type="submit" class="btn-primary">
+          Save changes
+        </button>
+
+        <a href="/main" class="btn-secondary">
+          Cancel
+        </a>
+      </div>
+
+    </form>
+
+  </div>
+</section>
+
+<%- include("partials/footer") %>

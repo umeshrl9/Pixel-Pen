@@ -68,12 +68,8 @@
   margin-top: 1rem;
 }
 
-/* Buttons reuse existing styles */
-.btn-primary {
-  padding: 0.65rem 1.6rem;
-  border-radius: 999px;
-}
-
+/* Buttons (reuse global styles) */
+.btn-primary,
 .btn-secondary {
   padding: 0.65rem 1.6rem;
   border-radius: 999px;

@@ -1,31 +1,56 @@
-<%- include("partials/header.ejs") %>
+<%- include("partials/header", {
+  title: "Create post | Pixel & Pen",
+  css: ["/styles/createBlogStyle.css"]
+}) %>
 
-<div class="mainBody min-vh-100 d-flex justify-content-center align-items-center py-5">
-  <div class="container" style="max-width: 600px;">
-    <div class="card text-bg-dark border-0 shadow-lg p-4">
-      <h2 class="text-center mb-4">Create New Blog</h2>
+<section class="editor-page">
+  <div class="editor-inner">
 
-      <form action="/create" method="POST">
-        <!-- Title Field -->
-        <div class="mb-3">
-          <label for="title" class="form-label">Title</label>
-          <input type="text" id="title" name="title" class="form-control bg-dark text-white border-0" placeholder="Enter blog title" required>
-        </div>
-
-        <!-- Content Field -->
-        <div class="mb-4">
-          <label for="content" class="form-label">Content</label>
-          <textarea id="content" name="content" rows="8" class="form-control bg-dark text-white border-0" placeholder="Write your story here..." required></textarea>
-        </div>
-
-        <!-- Submit Button -->
-        <div class="d-flex justify-content-between">
-          <button type="submit" class="btn btn-info">Create Blog</button>
-          <a href="/main" class="btn btn-danger">Cancel</a>
-        </div>
-      </form>
+    <div class="editor-header">
+      <h1>Create new post</h1>
+      <p>Your personal space to write without distractions.</p>
     </div>
-  </div>
-</div>
 
-<%- include("partials/footer.ejs") %>
+    <form action="/create" method="POST" class="editor-form">
+
+      <!-- Title -->
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input
+          id="title"
+          type="text"
+          name="title"
+          required
+          placeholder="Give your post a title"
+        />
+      </div>
+
+      <!-- Content -->
+      <div class="form-group">
+        <label for="content">Content</label>
+        <textarea
+          id="content"
+          name="content"
+          rows="10"
+          required
+          placeholder="Start writing here..."
+        ></textarea>
+      </div>
+
+      <!-- Actions -->
+      <div class="editor-actions">
+        <button type="submit" class="btn-primary">
+          Create
+        </button>
+
+        <a href="/main" class="btn-secondary">
+          Cancel
+        </a>
+      </div>
+
+    </form>
+
+  </div>
+</section>
+
+<%- include("partials/footer") %>

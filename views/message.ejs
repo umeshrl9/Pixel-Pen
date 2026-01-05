@@ -1,11 +1,32 @@
-<%- include("partials/header.ejs") %>
+<%- include("partials/header", {
+  title: "Something went wrong | Pixel & Pen",
+  css: ["/styles/message.css"]
+}) %>
 
-<div class="mainBody min-vh-100 d-flex justify-content-center align-items-center text-center">
-  <div class="container">
-    <h1 class="display-3 fw-bold text-danger mb-3 error-heading"><%= errorHeading %></h1>
-    <p class="lead mb-4" style="font-size: 1.2rem;"><%= message %></p>
-    <a href="/" class="btn btn-primary btn-lg px-4">Back to Home</a>
+<section class="error-page">
+  <div class="error-inner">
+
+    <!-- Icon -->
+    <div class="error-icon">
+      <i class="bi bi-exclamation-circle"></i>
+    </div>
+
+    <!-- Heading -->
+    <h1 class="error-heading">
+      <%= errorHeading %>
+    </h1>
+
+    <!-- Message -->
+    <p class="error-message">
+      <%= message %>
+    </p>
+
+    <!-- Action -->
+    <a href="/" class="btn-primary">
+      Back to home
+    </a>
+
   </div>
-</div>
+</section>
 
-<%- include("partials/footer.ejs") %>
+<%- include("partials/footer") %>
