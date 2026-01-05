@@ -14,39 +14,51 @@
 
       <ul class="nav nav-tabs mb-4 justify-content-center" id="authTab" role="tablist">
         <li class="nav-item">
-          <button class="nav-link active tab-btn" id="login-tab" data-bs-toggle="tab" data-bs-target="#login" type="button">Login</button>
+          <button class="nav-link tab-btn <%= activeTab === 'login' ? 'active' : '' %>" id="login-tab" data-bs-toggle="tab" data-bs-target="#login" type="button">Login</button>
         </li>
         <li class="nav-item">
-          <button class="nav-link tab-btn" id="register-tab" data-bs-toggle="tab" data-bs-target="#register" type="button">Register</button>
+          <button class="nav-link tab-btn <%= activeTab === 'register' ? 'active' : '' %>" id="register-tab" data-bs-toggle="tab" data-bs-target="#register" type="button">Register</button>
         </li>
       </ul>
 
       <div class="tab-content" id="authTabContent">
+
         <!-- Login Form -->
-        <div class="tab-pane fade show active" id="login">
+        <div class="tab-pane fade <%= activeTab === 'login' ? 'show active' : '' %>" id="login">
           <form action="/login" method="POST">
             <div class="form-group mb-3">
-              <input type="text" name="username" class="form-control form-field" placeholder="Username" required>
+              <input type="text" name="username" class="form-control form-field" placeholder="Username" required value="<%= oldInput && oldInput.username ? oldInput.username : '' %>">
             </div>
             <div class="form-group mb-4">
               <input type="password" name="password" class="form-control form-field" placeholder="Password" required>
             </div>
+
+            <% if (error && activeTab === 'login') { %>
+              <p class="text-danger small mt-2 text-center"><%= error %></p>
+            <% } %>
+
             <button type="submit" class="btn btn-primary w-100">Login</button>
           </form>
         </div>
 
         <!-- Register Form -->
-        <div class="tab-pane fade" id="register">
+        <div class="tab-pane fade <%= activeTab === 'register' ? 'show active' : '' %>" id="register">
           <form action="/register" method="POST">
             <div class="form-group mb-3">
-              <input type="text" name="username" class="form-control form-field" placeholder="Username" required>
+              <input type="text" name="username" class="form-control form-field" placeholder="Username" required value="<%= oldInput && oldInput.username ? oldInput.username : '' %>">
             </div>
             <div class="form-group mb-4">
               <input type="password" name="password" class="form-control form-field" placeholder="Password" required>
             </div>
+
+            <% if (error && activeTab === 'register') { %>
+              <p class="text-danger small mt-2 text-center"><%= error %></p>
+            <% } %>
+
             <button type="submit" class="btn btn-warning w-100">Register</button>
           </form>
         </div>
+
       </div>
 
       <div class="divider"><span>or</span></div>

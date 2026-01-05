@@ -87,17 +87,11 @@ app.post("/register", async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || username.trim().length === 0) {
-        return res.render("message", {
-            errorHeading: "Invalid Input",
-            message: "Username cannot be empty"
-        });
+        return res.render("auth", { error: "Username cannot be empty", activeTab: "register", oldInput: { username } });
     }
 
     if (!password || password.length < 6) {
-        return res.render("message", {
-            errorHeading: "Invalid Input",
-            message: "Password must be at least 6 characters"
-        });
+        return res.render("auth", { error: "Password must atleast be 6 characters", activeTab: "register", oldInput: { username } });
     }
 
     try {
@@ -107,7 +101,7 @@ app.post("/register", async (req, res) => {
         );
 
         if (existingUser.rows.length > 0) {
-            return res.render("message", { errorHeading: "Oh no!", message: "Username Already Taken" });
+            return res.render("auth", { error: "Username already taken", activeTab: "register", oldInput: { username } });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -139,9 +133,10 @@ app.post("/login", async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
-    return res.render("message", {
-      errorHeading: "Invalid Input",
-      message: "Username and password are required"
+    return res.render("auth", {
+      error: "Please enter both username and password",
+      activeTab: "login",
+      oldInput: {username}
     });
   }
 
@@ -167,10 +162,10 @@ app.post("/login", async (req, res) => {
 
                 res.redirect("/main");
             } else {
-                return res.render("message", { errorHeading: "Oh no!", message: "Wrong password" });
+                return res.render("auth", { error: "Wrong password", activeTab: "login", oldInput: { username } });
             }
         } else {
-            return res.render("message", { errorHeading: "Oh no!", message: "No account exists with the given username" });
+            return res.render("auth", { error: "No account exists with the given username", activeTab: "login", oldInput: { username } });
         }
     } catch (err) {
         console.log(err);
@@ -341,7 +336,7 @@ app.get("/auth", (req, res) => {
     if (token) {
         return res.redirect("/main");
     }
-    res.render("auth.ejs");
+    res.render("auth", { error: null, activeTab: "login", oldInput: {} });
 });
 
 
