@@ -1,111 +1,148 @@
 <%- include("partials/header", { title: "Your writings | Pixel & Pen" , css: ["/styles/mainPage.css"] }) %>
 
-  <section class="dashboard">
-    <div class="dashboard-inner">
+<section class="dashboard">
+  <div class="dashboard-inner">
 
-      <!-- Header -->
-      <div class="dashboard-header">
-        <div>
-          <h1>Your writings</h1>
-          <p>All your writings and thoughts!</p>
-        </div>
+    <!-- Header -->
+    <div class="dashboard-header">
+      <div>
+        <h1>Your writings</h1>
+        <p>All your writings and thoughts!</p>
+      </div>
 
-        <div class="dashboard-actions">
-          <a href="/create" class="btn-primary"></i>New post</a>
-          <a href="/logout" class="btn-secondary">Logout</a>
+      <div class="dashboard-actions">
+        <a href="/create" class="btn-primary">New post</a>
+        <a href="/logout" class="btn-secondary">Logout</a>
+      </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-bar">
+      <input 
+        type="text" 
+        id="searchInput" 
+        placeholder="Search your posts by title or content..."
+      >
+    </div>
+
+    <% if (!blogs || blogs.length === 0) { %>
+      <!-- Empty state -->
+      <div class="empty-state">
+        <i class="bi bi-journal-text"></i>
+        <h3>No posts yet</h3>
+        <p>Start your first entry and let your ideas take shape.</p>
+        <a href="/create" class="btn-primary">Write your first post</a>
+      </div>
+    <% } else { %>
+
+      <!-- Blog list -->
+      <div class="blog-list" id="blogList">
+        <% blogs.forEach(blog => { %>
+          <article class="blog-card" data-title="<%= blog.title.toLowerCase() %>" data-content="<%= blog.content.toLowerCase() %>">
+            <h2>
+              <a href="/blogs/<%= blog.id %>">
+                <%= blog.title %>
+              </a>
+            </h2>
+
+            <p class="excerpt">
+              <%= blog.content.length > 300 ? blog.content.substring(0, 300) + "…" : blog.content %>
+            </p>
+
+            <div class="blog-actions">
+              <a href="/edit/<%= blog.id %>" class="action-link">
+                <i class="bi bi-pencil"></i> Edit
+              </a>
+
+              <button class="action-link danger openDeleteModal" data-blogid="<%= blog.id %>">
+                <i class="bi bi-trash"></i> Delete
+              </button>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+
+      <!-- Single Delete Modal -->
+      <div class="delete-modal" id="deleteModal">
+        <div class="delete-modal-card">
+          <h3>Delete Blog?</h3>
+          <p>
+            This action is permanent.<br>
+            Your blog will be deleted forever.
+          </p>
+
+          <div class="delete-actions">
+            <button class="btn-outline" id="cancelDelete">Cancel</button>
+
+            <form id="deleteForm" action="/delete" method="POST">
+              <input type="hidden" name="id" id="deleteBlogId">
+              <button type="submit" class="btn-danger">
+                Yes, Delete
+              </button>
+            </form>
+          </div>
         </div>
       </div>
 
-      <% if (blogs.length===0) { %>
-        <!-- Empty state -->
-        <div class="empty-state">
-          <i class="bi bi-journal-text"></i>
-          <h3>No posts yet</h3>
-          <p>Start your first entry and let your ideas take shape.</p>
-          <a href="/create" class="btn-primary">Write your first post</a>
-        </div>
-        <% } else { %>
+    <% } %>
+  </div>
+</section>
 
-          <!-- Blog list -->
-          <div class="blog-list">
-            <% blogs.forEach(blog=> { %>
-              <article class="blog-card">
-                <h2>
-                  <a href="/blogs/<%= blog.id %>">
-                    <%= blog.title %>
-                  </a>
-                </h2>
+<script>
+  // -------- DELETE MODAL LOGIC --------
+  const openBtns = document.querySelectorAll(".openDeleteModal");
+  const modal = document.getElementById("deleteModal");
+  const cancelBtn = document.getElementById("cancelDelete");
+  const deleteBlogIdInput = document.getElementById("deleteBlogId");
 
-                <p class="excerpt">
-                  <%= blog.content.substring(0, 300) %>…
-                </p>
-
-
-                <div class="blog-actions">
-                  <a href="/edit/<%= blog.id %>" class="action-link">
-                    <i class="bi bi-pencil"></i> Edit
-                  </a>
-
-                  <button class="action-link danger openDeleteModal" data-blogid="<%= blog.id %>">
-                    <i class="bi bi-trash"></i> Delete
-                  </button>
-                </div>
-
-              </article>
-
-              <% }) %>
-          </div>
-
-          <!-- Single Delete Modal -->
-          <div class="delete-modal" id="deleteModal">
-            <div class="delete-modal-card">
-              <h3>Delete Blog?</h3>
-              <p>
-                This action is permanent.<br>
-                Your blog will be deleted forever.
-              </p>
-
-              <div class="delete-actions">
-                <button class="btn-outline" id="cancelDelete">Cancel</button>
-
-                <form id="deleteForm" action="/delete" method="POST">
-                  <input type="hidden" name="id" id="deleteBlogId">
-                  <button type="submit" class="btn-danger">
-                    Yes, Delete
-                  </button>
-                </form>
-              </div>
-            </div>
-          </div>
-
-          <% } %>
-    </div>
-  </section>
-
-  <script>
-    const openBtns = document.querySelectorAll(".openDeleteModal");
-    const modal = document.getElementById("deleteModal");
-    const cancelBtn = document.getElementById("cancelDelete");
-    const deleteBlogIdInput = document.getElementById("deleteBlogId");
-
-    openBtns.forEach(btn => {
-      btn.addEventListener("click", () => {
-        const blogId = btn.dataset.blogid;
-        deleteBlogIdInput.value = blogId; // set the id in the hidden input
-        modal.style.display = "flex";
-      });
+  openBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const blogId = btn.dataset.blogid;
+      deleteBlogIdInput.value = blogId;
+      modal.style.display = "flex";
     });
+  });
 
+  if (cancelBtn) {
     cancelBtn.addEventListener("click", () => {
       modal.style.display = "none";
     });
+  }
 
+  if (modal) {
     modal.addEventListener("click", (e) => {
       if (e.target === modal) {
         modal.style.display = "none";
       }
     });
+  }
 
-  </script>
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal) {
+      modal.style.display = "none";
+    }
+  });
 
-  <%- include("partials/footer") %>
+  // -------- SEARCH LOGIC --------
+  const searchInput = document.getElementById("searchInput");
+  const blogCards = document.querySelectorAll(".blog-card");
+
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      const query = searchInput.value.toLowerCase().trim();
+
+      blogCards.forEach(card => {
+        const title = card.dataset.title;
+        const content = card.dataset.content;
+
+        if (title.includes(query) || content.includes(query)) {
+          card.style.display = "block";
+        } else {
+          card.style.display = "none";
+        }
+      });
+    });
+  }
+</script>
+
+<%- include("partials/footer") %>
