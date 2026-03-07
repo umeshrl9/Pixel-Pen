@@ -79,6 +79,7 @@
   border-radius: 999px;
 }
 
+
 /* Responsive */
 @media (max-width: 600px) {
   .editor-header h1 {

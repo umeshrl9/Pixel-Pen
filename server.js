@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 import bcrypt from "bcryptjs";
 import passport from "passport";
+import multer from "multer";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 
 const app = express();
@@ -328,6 +329,27 @@ app.post('/delete', authenticateToken, async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).send("Server error while deleting blog");
+    }
+});
+
+app.post("/delete-account", authenticateToken, async (req, res) => {
+    try{
+        await pool.query(
+            "DELETE FROM users WHERE ID=$1", [req.userId]
+        );
+
+        res.clearCookie("token");
+
+        res.render("message", {
+            errorHeading: "Account Deleted  Successfully!",
+            message: "Your account and all associated blogs have been permanently deleted."
+        });
+    } catch(err){
+        console.error(err);
+        res.status(500).render("message", {
+            errorHeading: "Server Error",
+            message: "Unable to delete, please try again"
+        });
     }
 });
 
