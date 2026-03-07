@@ -13,7 +13,7 @@
         <div class="dashboard-actions">
           <a href="/create" class="btn-primary">New post</a>
           <a href="/logout" class="btn-secondary">Logout</a>
-          <button class="btn-danger" id="openDeleteAccount">Delete Account</button>
+          <button class="btn-danger" id="openDeleteAccount">Delete</button>
         </div>
       </div>
 
@@ -75,7 +75,7 @@
                 <form id="deleteForm" action="/delete" method="POST">
                   <input type="hidden" name="id" id="deleteBlogId">
                   <button type="submit" class="btn-danger">
-                    Yes, Delete
+                    Yes, Proceed
                   </button>
                 </form>
               </div>
@@ -101,7 +101,7 @@
 
                   <form action="/delete-account" method="POST">
                     <button type="submit" class="btn-danger">
-                      Yes, Delete Account
+                      Yes, Proceed
                     </button>
                   </form>
                 </div>
