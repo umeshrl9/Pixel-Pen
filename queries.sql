@@ -14,3 +14,10 @@ CREATE TABLE blogs (
   content TEXT NOT NULL,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE
 );
+
+ALTER TABLE users
+ADD COLUMN name TEXT,
+ADD COLUMN bio TEXT,
+ADD COLUMN profile_picture TEXT,
+ADD COLUMN website TEXT,
+ADD COLUMN location TEXT

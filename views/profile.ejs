@@ -1,0 +1,130 @@
+<%- include("partials/header", { title: "Profile | Pixel & Pen", css: ["/styles/mainPage.css", "/styles/profile.css"] }) %>
+
+<section class="dashboard">
+  <div class="dashboard-inner">
+
+    <!-- Header -->
+    <div class="dashboard-header">
+      <div>
+        <h1>Your profile</h1>
+        <p>Manage your personal information.</p>
+      </div>
+
+      <div class="dashboard-actions">
+        <a href="/create" class="btn-primary">New post</a>
+        <a href="/main" class="btn-secondary">Your writings</a>
+        <a href="/logout" class="btn-secondary">Logout</a>
+      </div>
+    </div>
+
+    <!-- TWO COLUMN LAYOUT -->
+    <div class="profile-grid">
+
+      <!-- LEFT : PROFILE -->
+      <div class="profile-left">
+
+        <div class="blog-card">
+
+          <div class="profile-layout">
+
+            <div class="profile-avatar">
+              <img src="<%= user.profile_picture || '/images/avatar-default.svg' %>">
+            </div>
+
+            <div class="profile-info">
+
+              <h2 class="profile-name">
+                <%= user.name || user.username %>
+              </h2>
+
+              <p class="profile-username">@<%= user.username %></p>
+
+              <% if(user.bio){ %>
+                <p class="profile-bio"><%= user.bio %></p>
+              <% } else { %>
+                <p class="profile-add">
+                  <a href="/edit-profile">+ Add a short bio</a>
+                </p>
+              <% } %>
+
+              <div class="profile-meta">
+
+                <% if(user.website){ %>
+                  <a href="<%= user.website %>" target="_blank" class="profile-link">
+                    <i class="bi bi-globe"></i> Website
+                  </a>
+                <% } else { %>
+                  <a href="/edit-profile" class="profile-add-link">
+                    <i class="bi bi-globe"></i> Add website
+                  </a>
+                <% } %>
+
+                <% if(user.location){ %>
+                  <span class="profile-location">
+                    <i class="bi bi-geo-alt"></i> <%= user.location %>
+                  </span>
+                <% } else { %>
+                  <a href="/edit-profile" class="profile-add-link">
+                    <i class="bi bi-geo-alt"></i> Add location
+                  </a>
+                <% } %>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- RIGHT : RECENT POSTS -->
+      <div class="profile-right">
+
+        <h3 class="recent-heading">Recent posts</h3>
+
+        <% if (!blogs || blogs.length === 0) { %>
+
+          <div class="empty-state small">
+            <h3>No posts yet</h3>
+            <p>Start writing your first blog.</p>
+            <a href="/create" class="btn-primary">Write post</a>
+          </div>
+
+        <% } else { %>
+
+          <div class="recent-posts">
+
+            <% blogs.forEach(blog => { %>
+
+              <article class="recent-post">
+
+                <h4>
+                  <a href="/blogs/<%= blog.id %>">
+                    <%= blog.title %>
+                  </a>
+                </h4>
+
+                <p>
+                  <%= blog.content.length > 120 
+                      ? blog.content.substring(0,120) + "…" 
+                      : blog.content %>
+                </p>
+
+              </article>
+
+            <% }) %>
+
+          </div>
+
+        <% } %>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<%- include("partials/footer") %>

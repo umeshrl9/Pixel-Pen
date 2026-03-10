@@ -220,6 +220,34 @@ app.get("/create", authenticateToken, (req, res) => {
     res.render("createBlog.ejs");
 });
 
+app.get("/profile", authenticateToken, async (req, res) => {
+    try{
+        const result = await pool.query(
+            "SELECT username, name, bio, profile_picture, website, location FROM users WHERE id = $1", [req.userId]
+        );
+
+        const user = result.rows[0];
+
+        const resultBlogs = await pool.query(
+            "SELECT * FROM blogs WHERE user_id = $1 ORDER BY id DESC",
+            [req.userId]
+        );
+
+        
+
+        res.render("profile.ejs", {
+            user: user,
+            blogs: resultBlogs.rows
+        });
+    } catch(err){
+        console.err(err);
+        res.status(500).render("message", {
+            errorHeading: "500",
+            message: "Error Loading Profile"
+        });
+    }
+});
+
 app.post('/create', authenticateToken, async (req, res) => {
     const { title, content } = req.body;
 
