@@ -12,17 +12,22 @@
       <p>Manage your personal information.</p>
     </div>
 
-    <form action="/edit-profile" method="POST" class="profile-card" id="profileForm">
+    <form action="/edit-profile" method="POST" enctype="multipart/form-data" class="profile-card" id="profileForm">
 
       <!-- Avatar -->
       <div class="profile-avatar">
+
         <% if(user.profile_picture){ %>
-          <img src="<%= user.profile_picture %>" alt="profile picture">
+          <img id="avatarPreview" src="<%= user.profile_picture %>" alt="profile picture">
         <% } else { %>
-          <div class="avatar-placeholder">
+          <div id="avatarPreview" class="avatar-placeholder">
             <%= user.username.charAt(0).toUpperCase() %>
           </div>
         <% } %>
+
+        <!-- File input (edit mode only) -->
+        <input class="edit" type="file" name="profile_picture" id="profileImageInput" accept="image/*">
+
       </div>
 
       <div class="profile-info">
@@ -70,7 +75,7 @@
           Edit Profile
         </button>
 
-        <button type="submit" class="btn-primary edit" id="saveBtn">
+        <button type="submit" class="btn-primary edit">
           Save
         </button>
 
@@ -89,6 +94,8 @@
 
 const editBtn = document.getElementById("editBtn");
 const cancelBtn = document.getElementById("cancelBtn");
+const imageInput = document.getElementById("profileImageInput");
+const avatarPreview = document.getElementById("avatarPreview");
 
 const editFields = document.querySelectorAll(".edit");
 const viewFields = document.querySelectorAll(".view");
@@ -102,6 +109,34 @@ editBtn.onclick = () => {
 
   editBtn.style.display = "none";
 }
+
+/* Image preview before upload */
+
+imageInput.addEventListener("change", function(){
+  const file = this.files[0];
+  if(file){
+
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+      if(avatarPreview.tagName === "IMG"){
+        avatarPreview.src = e.target.result;
+      } else {
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        img.id = "avatarPreview";
+        img.style.width = "90px";
+        img.style.height = "90px";
+        img.style.borderRadius = "50%";
+        img.style.objectFit = "cover";
+
+        avatarPreview.replaceWith(img);
+      }
+    }
+
+    reader.readAsDataURL(file);
+  }
+});
 
 cancelBtn.onclick = () => {
   location.reload();

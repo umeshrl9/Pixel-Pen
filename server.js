@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 import bcrypt from "bcryptjs";
 import passport from "passport";
-import multer from "multer";
+import upload from "./config/multer.js";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 
 const app = express();
@@ -332,17 +332,32 @@ app.post('/edit/:id', authenticateToken, async (req, res) => {
     }
 });
 
-app.post("/edit-profile", authenticateToken, async (req, res) => {
+app.post("/edit-profile", authenticateToken, upload.single("profile_picture"), async (req, res) => {
   const { name, bio, website, location } = req.body;
-  try{
-      await pool.query(
-      `UPDATE users
-       SET name=$1, bio=$2, website=$3, location=$4
-       WHERE id=$5`,
-      [name, bio, website, location, req.userId]
-    );
 
-    res.redirect("/profile");
+  let profilePictureUrl = null;
+  if(req.file){
+    profilePictureUrl = req.file.path;
+  }
+
+  try{
+    if(profilePictureUrl){
+        await pool.query(
+          `UPDATE users
+           SET name=$1, bio=$2, website=$3, location=$4, profile_picture=$5
+           WHERE id=$6`,
+          [name, bio, website, location, profilePictureUrl, req.userId]
+        );
+      } else {
+        await pool.query(
+          `UPDATE users
+           SET name=$1, bio=$2, website=$3, location=$4
+           WHERE id=$5`,
+          [name, bio, website, location, req.userId]
+        );
+      }
+
+      res.redirect("/profile");
   } catch(err){
     console.error(err);
     res.status(500).send("Error updating profile");
