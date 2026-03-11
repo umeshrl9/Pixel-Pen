@@ -1,130 +1,112 @@
-<%- include("partials/header", { title: "Profile | Pixel & Pen", css: ["/styles/mainPage.css", "/styles/profile.css"] }) %>
+<%- include("partials/header", {
+  title: "Profile | Pixel & Pen",
+  css: ["/styles/profile.css"]
+}) %>
 
-<section class="dashboard">
-  <div class="dashboard-inner">
+<section class="profile-page">
+  <div class="profile-inner">
 
     <!-- Header -->
-    <div class="dashboard-header">
-      <div>
-        <h1>Your profile</h1>
-        <p>Manage your personal information.</p>
-      </div>
-
-      <div class="dashboard-actions">
-        <a href="/create" class="btn-primary">New post</a>
-        <a href="/main" class="btn-secondary">Your writings</a>
-        <a href="/logout" class="btn-secondary">Logout</a>
-      </div>
+    <div class="profile-header">
+      <h1>Your profile</h1>
+      <p>Manage your personal information.</p>
     </div>
 
-    <!-- TWO COLUMN LAYOUT -->
-    <div class="profile-grid">
+    <form action="/edit-profile" method="POST" class="profile-card" id="profileForm">
 
-      <!-- LEFT : PROFILE -->
-      <div class="profile-left">
-
-        <div class="blog-card">
-
-          <div class="profile-layout">
-
-            <div class="profile-avatar">
-              <img src="<%= user.profile_picture || '/images/avatar-default.svg' %>">
-            </div>
-
-            <div class="profile-info">
-
-              <h2 class="profile-name">
-                <%= user.name || user.username %>
-              </h2>
-
-              <p class="profile-username">@<%= user.username %></p>
-
-              <% if(user.bio){ %>
-                <p class="profile-bio"><%= user.bio %></p>
-              <% } else { %>
-                <p class="profile-add">
-                  <a href="/edit-profile">+ Add a short bio</a>
-                </p>
-              <% } %>
-
-              <div class="profile-meta">
-
-                <% if(user.website){ %>
-                  <a href="<%= user.website %>" target="_blank" class="profile-link">
-                    <i class="bi bi-globe"></i> Website
-                  </a>
-                <% } else { %>
-                  <a href="/edit-profile" class="profile-add-link">
-                    <i class="bi bi-globe"></i> Add website
-                  </a>
-                <% } %>
-
-                <% if(user.location){ %>
-                  <span class="profile-location">
-                    <i class="bi bi-geo-alt"></i> <%= user.location %>
-                  </span>
-                <% } else { %>
-                  <a href="/edit-profile" class="profile-add-link">
-                    <i class="bi bi-geo-alt"></i> Add location
-                  </a>
-                <% } %>
-
-              </div>
-
-            </div>
-
+      <!-- Avatar -->
+      <div class="profile-avatar">
+        <% if(user.profile_picture){ %>
+          <img src="<%= user.profile_picture %>" alt="profile picture">
+        <% } else { %>
+          <div class="avatar-placeholder">
+            <%= user.username.charAt(0).toUpperCase() %>
           </div>
+        <% } %>
+      </div>
 
+      <div class="profile-info">
+
+        <!-- Name -->
+        <div class="info-group">
+          <label>Name</label>
+          <p class="view"><%= user.name || "Not added yet" %></p>
+          <input class="edit" type="text" name="name" value="<%= user.name || "" %>">
+        </div>
+
+        <!-- Username -->
+        <div class="info-group">
+          <label>Username</label>
+          <p>@<%= user.username %></p>
+        </div>
+
+        <!-- Bio -->
+        <div class="info-group">
+          <label>Bio</label>
+          <p class="view"><%= user.bio || "No bio yet." %></p>
+          <textarea class="edit" name="bio"><%= user.bio || "" %></textarea>
+        </div>
+
+        <!-- Location -->
+        <div class="info-group">
+          <label>Location</label>
+          <p class="view"><%= user.location || "Not specified" %></p>
+          <input class="edit" type="text" name="location" value="<%= user.location || "" %>">
+        </div>
+
+        <!-- Website -->
+        <div class="info-group">
+          <label>Website</label>
+          <p class="view"><%= user.website || "Not provided" %></p>
+          <input class="edit" type="text" name="website" value="<%= user.website || "" %>">
         </div>
 
       </div>
 
-      <!-- RIGHT : RECENT POSTS -->
-      <div class="profile-right">
+      <!-- Actions -->
+      <div class="profile-actions">
 
-        <h3 class="recent-heading">Recent posts</h3>
+        <button type="button" class="btn-primary" id="editBtn">
+          Edit Profile
+        </button>
 
-        <% if (!blogs || blogs.length === 0) { %>
+        <button type="submit" class="btn-primary edit" id="saveBtn">
+          Save
+        </button>
 
-          <div class="empty-state small">
-            <h3>No posts yet</h3>
-            <p>Start writing your first blog.</p>
-            <a href="/create" class="btn-primary">Write post</a>
-          </div>
-
-        <% } else { %>
-
-          <div class="recent-posts">
-
-            <% blogs.forEach(blog => { %>
-
-              <article class="recent-post">
-
-                <h4>
-                  <a href="/blogs/<%= blog.id %>">
-                    <%= blog.title %>
-                  </a>
-                </h4>
-
-                <p>
-                  <%= blog.content.length > 120 
-                      ? blog.content.substring(0,120) + "…" 
-                      : blog.content %>
-                </p>
-
-              </article>
-
-            <% }) %>
-
-          </div>
-
-        <% } %>
+        <button type="button" class="btn-secondary edit" id="cancelBtn">
+          Cancel
+        </button>
 
       </div>
 
-    </div>
+    </form>
 
   </div>
 </section>
+
+<script>
+
+const editBtn = document.getElementById("editBtn");
+const cancelBtn = document.getElementById("cancelBtn");
+
+const editFields = document.querySelectorAll(".edit");
+const viewFields = document.querySelectorAll(".view");
+
+editFields.forEach(el => el.style.display = "none");
+
+editBtn.onclick = () => {
+
+  viewFields.forEach(el => el.style.display = "none");
+  editFields.forEach(el => el.style.display = "block");
+
+  editBtn.style.display = "none";
+}
+
+cancelBtn.onclick = () => {
+  location.reload();
+}
+
+</script>
 
 <%- include("partials/footer") %>

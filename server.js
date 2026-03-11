@@ -332,6 +332,23 @@ app.post('/edit/:id', authenticateToken, async (req, res) => {
     }
 });
 
+app.post("/edit-profile", authenticateToken, async (req, res) => {
+  const { name, bio, website, location } = req.body;
+  try{
+      await pool.query(
+      `UPDATE users
+       SET name=$1, bio=$2, website=$3, location=$4
+       WHERE id=$5`,
+      [name, bio, website, location, req.userId]
+    );
+
+    res.redirect("/profile");
+  } catch(err){
+    console.error(err);
+    res.status(500).send("Error updating profile");
+  }
+});
+
 app.post('/delete', authenticateToken, async (req, res) => {
     const blogID = req.body.id;
 
