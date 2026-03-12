@@ -1,147 +1,178 @@
-<%- include("partials/header", {
-  title: "Profile | Pixel & Pen",
-  css: ["/styles/profile.css"]
-}) %>
+<%- include("partials/header", { title: "Profile | Pixel & Pen" , css: ["/styles/profile.css"] }) %>
 
-<section class="profile-page">
-  <div class="profile-inner">
+  <section class="profile-page">
+    <div class="profile-inner">
 
-    <!-- Header -->
-    <div class="profile-header">
-      <h1>Your profile</h1>
-      <p>Manage your personal information.</p>
-    </div>
+      <!-- Header -->
+      <div class="profile-header">
+        <h1>Your profile</h1>
+        <p>Manage your personal information.</p>
+      </div>
 
-    <form action="/edit-profile" method="POST" enctype="multipart/form-data" class="profile-card" id="profileForm">
+      <form action="/edit-profile" method="POST" enctype="multipart/form-data" class="profile-card" id="profileForm">
 
-      <!-- Avatar -->
-      <div class="profile-avatar">
+        <!-- Avatar -->
+        <div class="profile-avatar" style="display: flex; flex-direction: column;">
 
-        <% if(user.profile_picture){ %>
-          <img id="avatarPreview" src="<%= user.profile_picture %>" alt="profile picture">
-        <% } else { %>
-          <div id="avatarPreview" class="avatar-placeholder">
-            <%= user.username.charAt(0).toUpperCase() %>
+          <div class="avatar-wrapper" style="margin: auto;">
+
+            <% if(user.profile_picture){ %>
+              <img id="avatarPreview" src="<%= user.profile_picture %>" alt="profile picture">
+              <% } else { %>
+                <div id="avatarPreview" class="avatar-placeholder">
+                  <%= user.username.charAt(0).toUpperCase() %>
+                </div>
+                <% } %>
+
+                  <!-- overlay -->
+                  <label for="profileImageInput" class="avatar-overlay edit">
+                    <svg viewBox="0 0 24 24" width="16" height="16">
+                      <path fill="currentColor" d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" />
+                    </svg>
+                  </label>
+
           </div>
-        <% } %>
 
-        <!-- File input (edit mode only) -->
-        <input class="edit" type="file" name="profile_picture" id="profileImageInput" accept="image/*">
+          <input type="file" name="profile_picture" id="profileImageInput" accept="image/*" hidden class="edit">
 
-      </div>
+          <% if(user.profile_picture){ %>
+            <button type="button" class="remove-avatar edit" id="removeAvatarBtn">
+              Remove image
+            </button>
 
-      <div class="profile-info">
+            <input type="hidden" name="remove_avatar" id="removeAvatarInput" value="false">
+            <% } %>
 
-        <!-- Name -->
-        <div class="info-group">
-          <label>Name</label>
-          <p class="view"><%= user.name || "Not added yet" %></p>
-          <input class="edit" type="text" name="name" value="<%= user.name || "" %>">
         </div>
 
-        <!-- Username -->
-        <div class="info-group">
-          <label>Username</label>
-          <p>@<%= user.username %></p>
+        <div class="profile-info">
+
+          <!-- Name -->
+          <div class="info-group">
+            <label>Name</label>
+            <p class="view">
+              <%= user.name || "Not added yet" %>
+            </p>
+            <input class="edit" type="text" name="name" value="<%= user.name || "" %>">
+          </div>
+
+          <!-- Username -->
+          <div class="info-group">
+            <label>Username</label>
+            <p>@<%= user.username %>
+            </p>
+          </div>
+
+          <!-- Bio -->
+          <div class="info-group">
+            <label>Bio</label>
+            <p class="view">
+              <%= user.bio || "No bio yet." %>
+            </p>
+            <textarea class="edit" name="bio"><%= user.bio || "" %></textarea>
+          </div>
+
+          <!-- Location -->
+          <div class="info-group">
+            <label>Location</label>
+            <p class="view">
+              <%= user.location || "Not specified" %>
+            </p>
+            <input class="edit" type="text" name="location" value="<%= user.location || "" %>">
+          </div>
+
+          <!-- Website -->
+          <div class="info-group">
+            <label>Website</label>
+            <p class="view">
+              <%= user.website || "Not provided" %>
+            </p>
+            <input class="edit" type="text" name="website" value="<%= user.website || "" %>">
+          </div>
+
         </div>
 
-        <!-- Bio -->
-        <div class="info-group">
-          <label>Bio</label>
-          <p class="view"><%= user.bio || "No bio yet." %></p>
-          <textarea class="edit" name="bio"><%= user.bio || "" %></textarea>
+        <!-- Actions -->
+        <div class="profile-actions">
+
+          <button type="button" class="btn-primary" id="editBtn">
+            Edit Profile
+          </button>
+
+          <button type="submit" class="btn-primary edit">
+            Save
+          </button>
+
+          <button type="button" class="btn-secondary edit" id="cancelBtn">
+            Cancel
+          </button>
+
         </div>
 
-        <!-- Location -->
-        <div class="info-group">
-          <label>Location</label>
-          <p class="view"><%= user.location || "Not specified" %></p>
-          <input class="edit" type="text" name="location" value="<%= user.location || "" %>">
-        </div>
+      </form>
 
-        <!-- Website -->
-        <div class="info-group">
-          <label>Website</label>
-          <p class="view"><%= user.website || "Not provided" %></p>
-          <input class="edit" type="text" name="website" value="<%= user.website || "" %>">
-        </div>
+    </div>
+  </section>
 
-      </div>
+  <script>
 
-      <!-- Actions -->
-      <div class="profile-actions">
+    const editBtn = document.getElementById("editBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const imageInput = document.getElementById("profileImageInput");
+    const avatarPreview = document.getElementById("avatarPreview");
 
-        <button type="button" class="btn-primary" id="editBtn">
-          Edit Profile
-        </button>
+    const editFields = document.querySelectorAll(".edit");
+    const viewFields = document.querySelectorAll(".view");
 
-        <button type="submit" class="btn-primary edit">
-          Save
-        </button>
+    editFields.forEach(el => el.style.display = "none");
 
-        <button type="button" class="btn-secondary edit" id="cancelBtn">
-          Cancel
-        </button>
+    editBtn.onclick = () => {
 
-      </div>
+      viewFields.forEach(el => el.style.display = "none");
+      editFields.forEach(el => {
+        if (el.classList.contains("avatar-overlay")) {
+          el.style.display = "flex";
+        } else {
+          el.style.display = "block";
+        }
+      });
 
-    </form>
-
-  </div>
-</section>
-
-<script>
-
-const editBtn = document.getElementById("editBtn");
-const cancelBtn = document.getElementById("cancelBtn");
-const imageInput = document.getElementById("profileImageInput");
-const avatarPreview = document.getElementById("avatarPreview");
-
-const editFields = document.querySelectorAll(".edit");
-const viewFields = document.querySelectorAll(".view");
-
-editFields.forEach(el => el.style.display = "none");
-
-editBtn.onclick = () => {
-
-  viewFields.forEach(el => el.style.display = "none");
-  editFields.forEach(el => el.style.display = "block");
-
-  editBtn.style.display = "none";
-}
-
-/* Image preview before upload */
-
-imageInput.addEventListener("change", function(){
-  const file = this.files[0];
-  if(file){
-
-    const reader = new FileReader();
-
-    reader.onload = function(e){
-      if(avatarPreview.tagName === "IMG"){
-        avatarPreview.src = e.target.result;
-      } else {
-        const img = document.createElement("img");
-        img.src = e.target.result;
-        img.id = "avatarPreview";
-        img.style.width = "90px";
-        img.style.height = "90px";
-        img.style.borderRadius = "50%";
-        img.style.objectFit = "cover";
-
-        avatarPreview.replaceWith(img);
-      }
+      editBtn.style.display = "none";
     }
 
-    reader.readAsDataURL(file);
-  }
-});
+    /* Image preview before upload */
 
-cancelBtn.onclick = () => {
-  location.reload();
-}
+    imageInput.addEventListener("change", function () {
+      const file = this.files[0];
+      if (file) {
 
-</script>
+        const reader = new FileReader();
 
-<%- include("partials/footer") %>
+        reader.onload = function (e) {
+          if (avatarPreview.tagName === "IMG") {
+            avatarPreview.src = e.target.result;
+          } else {
+            const img = document.createElement("img");
+            img.src = e.target.result;
+            img.id = "avatarPreview";
+            img.style.width = "90px";
+            img.style.height = "90px";
+            img.style.borderRadius = "50%";
+            img.style.objectFit = "cover";
+
+            avatarPreview.replaceWith(img);
+          }
+        }
+
+        reader.readAsDataURL(file);
+      }
+    });
+
+    cancelBtn.onclick = () => {
+      location.reload();
+    }
+
+  </script>
+
+  <%- include("partials/footer") %>
