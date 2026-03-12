@@ -141,6 +141,28 @@
       editBtn.style.display = "none";
     }
 
+    const removeBtn = document.getElementById("removeAvatarBtn");
+    const removeInput = document.getElementById("removeAvatarInput");
+
+    if (removeBtn) {
+      removeBtn.onclick = () => {
+
+        // tell backend to remove image
+        removeInput.value = "true";
+
+        // clear file input if user had selected one
+        imageInput.value = "";
+
+        // create default avatar
+        const placeholder = document.createElement("div");
+        placeholder.id = "avatarPreview";
+        placeholder.className = "avatar-placeholder";
+        placeholder.textContent = "<%= user.username.charAt(0).toUpperCase() %>";
+
+        avatarPreview.replaceWith(placeholder);
+      }
+    }
+
     /* Image preview before upload */
 
     imageInput.addEventListener("change", function () {

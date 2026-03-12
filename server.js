@@ -8,6 +8,7 @@ import bcrypt from "bcryptjs";
 import passport from "passport";
 import upload from "./config/multer.js";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import cloudinary from "./config/cloudinary.js";
 
 const app = express();
 dotenv.config();
@@ -78,6 +79,14 @@ const authenticateToken = (req, res, next) => {
         return res.redirect("/auth");
     }
 };
+
+function getPublicId(url){
+  const parts = url.split("/");
+  const file = parts.pop();
+  const folder = parts.pop();
+  const publicId = file.split(".")[0];
+  return `${folder}/${publicId}`;
+}   
 
 
 app.get("/", (req, res) => {
@@ -333,31 +342,37 @@ app.post('/edit/:id', authenticateToken, async (req, res) => {
 });
 
 app.post("/edit-profile", authenticateToken, upload.single("profile_picture"), async (req, res) => {
-  const { name, bio, website, location } = req.body;
-
-  let profilePictureUrl = null;
-  if(req.file){
-    profilePictureUrl = req.file.path;
-  }
+  const { name, bio, website, location, remove_avatar } = req.body;
 
   try{
-    if(profilePictureUrl){
-        await pool.query(
-          `UPDATE users
-           SET name=$1, bio=$2, website=$3, location=$4, profile_picture=$5
-           WHERE id=$6`,
-          [name, bio, website, location, profilePictureUrl, req.userId]
-        );
-      } else {
-        await pool.query(
-          `UPDATE users
-           SET name=$1, bio=$2, website=$3, location=$4
-           WHERE id=$5`,
-          [name, bio, website, location, req.userId]
-        );
-      }
+    const result = await pool.query(
+        "SELECT profile_picture FROM users WHERE id=$1",
+        [req.userId]
+    );
 
-      res.redirect("/profile");
+    const oldImage = result.rows[0].profile_picture;
+
+    if(oldImage && (req.file || remove_avatar === "true")){
+        const publicId = getPublicId(oldImage);
+        await cloudinary.uploader.destroy(publicId);
+    }
+
+    let profilePictureUrl = oldImage;
+
+    if(req.file){
+        profilePictureUrl = req.file.path;
+    }
+
+    if(remove_avatar === "true"){
+        profilePictureUrl = null;
+    }
+
+    await pool.query(
+        "UPDATE users SET name=$1, bio=$2, website=$3, location=$4, profile_picture=$5 WHERE id=$6",
+        [name, bio, website, location, profilePictureUrl, req.userId]
+    );
+
+    res.redirect("/profile");
   } catch(err){
     console.error(err);
     res.status(500).send("Error updating profile");
