@@ -33,6 +33,29 @@ app.use(passport.initialize());
 
 app.set('view engine', 'ejs');
 
+app.use(async (req, res, next) => {
+    const token = req.cookies.token;
+
+    if(!token){
+        res.locals.currentUser = null;
+        return next();
+    }
+
+    try{
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const result = await pool.query(
+            "SELECT id, username, profile_picture FROM users WHERE id=$1", [decoded.userId]
+        );
+
+        res.locals.currentUser = result.rows[0] || null;
+    } catch(err){
+        res.locals.currentUser = null;
+    }
+
+    next();
+})
+
 passport.use(
     new GoogleStrategy({
         clientID: process.env.GOOGLE_CLIENT_ID,
@@ -415,6 +438,7 @@ app.post("/delete-account", authenticateToken, async (req, res) => {
 
         res.clearCookie("token");
 
+        res.locals.currentUser = null;
         res.render("message", {
             errorHeading: "Account Deleted  Successfully!",
             message: "Your account and all associated blogs have been permanently deleted."

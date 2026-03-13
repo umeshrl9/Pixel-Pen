@@ -33,8 +33,60 @@
 
   <header class="site-header">
     <div class="container header-inner">
+
       <a href="/" class="brand">
         Pixel<span>&</span>Pen
       </a>
+
+      <% if (currentUser) { %>
+        <div class="profile-menu">
+
+          <button class="profile-btn" onclick="toggleMenu()">
+            <% if (currentUser.profile_picture) { %>
+              <img src="<%= currentUser.profile_picture %>" class="avatar">
+              <% } else { %>
+                <i class="bi bi-person-circle avatar-icon"></i>
+                <% } %>
+          </button>
+
+          <div class="dropdown-menu" id="profileDropdown">
+
+            <a href="/profile">
+              <i class="bi bi-person"></i>
+              Your Profile
+            </a>
+
+            <a href="/logout">
+              <i class="bi bi-box-arrow-right"></i>
+              Logout
+            </a>
+
+            <div class="dropdown-divider"></div>
+
+            <form action="/delete-account" method="POST">
+              <button type="submit" class="delete-btn">
+                <i class="bi bi-trash"></i>
+                Delete Account
+              </button>
+            </form>
+
+          </div>
+        </div>
+        <% } %>
+
     </div>
   </header>
+
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById("profileDropdown");
+      menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+    }
+
+    window.addEventListener("click", function (e) {
+      if (!e.target.closest(".profile-menu")) {
+        const menu = document.getElementById("profileDropdown");
+        if (menu) menu.style.display = "none";
+      }
+    });
+  </script>

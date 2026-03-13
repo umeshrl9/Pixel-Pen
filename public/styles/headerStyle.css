@@ -28,3 +28,118 @@
 .brand:hover {
   color: #000;
 }
+
+.header-inner{
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+/* Profile Menu */
+
+.profile-menu{
+  position:relative;
+}
+
+.profile-btn{
+  background:none;
+  border:none;
+  cursor:pointer;
+  padding:0;
+}
+
+.profile-btn img{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+.profile-btn i{
+  font-size:32px;
+  color:#555;
+}
+
+
+/* Dropdown */
+
+.dropdown-menu{
+  position:absolute;
+  right:0;
+  top:50px;
+
+  width:210px;
+
+  background:#ffffff;
+  border:1px solid #eee;
+  border-radius:12px;
+
+  box-shadow:0 10px 30px rgba(0,0,0,0.08);
+
+  display:none;
+  flex-direction:column;
+
+  padding:6px 0;
+  z-index:1000;
+}
+
+
+/* Dropdown items */
+
+.dropdown-menu a,
+.dropdown-menu button{
+
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+  width:100%;
+
+  padding:10px 16px;
+
+  border:none;
+  background:none;
+
+  font-family:'Inter', sans-serif;
+  font-size:0.95rem;
+
+  color:#222;
+  text-decoration:none;
+
+  cursor:pointer;
+
+  transition:background .15s ease;
+}
+
+.dropdown-menu a:hover,
+.dropdown-menu button:hover{
+  background:#f7f7f7;
+}
+
+
+/* icons */
+
+.dropdown-menu i{
+  font-size:1rem;
+  color:#666;
+}
+
+
+/* divider */
+
+.dropdown-divider{
+  height:1px;
+  background:#eee;
+  margin:6px 0;
+}
+
+
+/* delete */
+
+.delete-btn{
+  color:#e5484d;
+}
+
+.delete-btn i{
+  color:#e5484d;
+}
