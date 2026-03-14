@@ -343,12 +343,13 @@
             `SELECT
                 blogs.*,
                 users.username,
+                users.profile_picture,
                 COALESCE(SUM(blog_votes.vote_type), 0) AS score
             FROM blogs 
             JOIN users ON blogs.user_id = users.id
             LEFT JOIN blog_votes ON blogs.id = blog_votes.blog_id
             WHERE blogs.published = TRUE
-            GROUP BY blogs.id, users.username
+            GROUP BY blogs.id, users.username, users.profile_picture
             `
         );
 
