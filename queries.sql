@@ -24,3 +24,11 @@ ADD COLUMN location TEXT
 
 ALTER TABLE blogs
 ADD COLUMN published BOOLEAN DEFAULT FALSE;
+
+CREATE TABLE blog_votes(
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  blog_id INTEGER REFERENCES blogs(id) ON DELETE CASCADE,
+  vote_type SMALLINT NOT NULL,
+  UNIQUE(user_id, blog_id)
+);
