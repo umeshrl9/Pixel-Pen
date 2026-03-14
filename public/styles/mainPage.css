@@ -74,6 +74,24 @@
   }
 }
 
+/* PUBLISH STATUS */
+
+.publish-badge{
+  display:inline-block;
+  margin-top:4px;
+  font-size:0.75rem;
+  font-weight:600;
+  color:#0a7a0a;
+}
+
+.draft-badge{
+  display:inline-block;
+  margin-top:4px;
+  font-size:0.75rem;
+  font-weight:600;
+  color:#888;
+}
+
 /* Animation */
 @keyframes pop {
   from {

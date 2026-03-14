@@ -338,6 +338,34 @@
         }
     });
 
+    app.get("/explore", async (req, res) => {
+        const result = await pool.query(
+            `SELECT
+                blogs.*,
+                users.username,
+                COALESCE(SUM(blog_votes.vote_type), 0) AS score
+            FROM blogs 
+            JOIN users ON blogs.user_id = users.id
+            LEFT JOIN blog_votes ON blogs.id = blog_votes.blog_id
+            WHERE blogs.published = TRUE
+            GROUP BY blogs.id, users.username
+            `
+        );
+
+        res.render("explore", { blogs: result.rows });
+    });
+
+    app.post("/publish/:id", authenticateToken, async (req, res) => {
+        const blogId = req.params.id;
+
+        await pool.query(
+            "UPDATE blogs SET published = TRUE, published_at = NOW() WHERE id=$1 AND user_id=$2",
+            [blogId, req.userId]
+        );
+
+        res.redirect("/main");
+    });
+
     app.post('/edit/:id', authenticateToken, async (req, res) => {
         const blogID = req.params.id;
         const { title, content } = req.body;

@@ -1,0 +1,130 @@
+<%- include("partials/header", { title: "Explore | Pixel & Pen" , css: ["/styles/mainPage.css"] }) %>
+
+<section class="dashboard">
+  <div class="dashboard-inner">
+
+    <!-- Header -->
+    <div class="dashboard-header">
+      <div>
+        <h1>Explore</h1>
+        <p>Discover blogs shared by the community.</p>
+      </div>
+    </div>
+
+    <!-- Search (Backend) -->
+    <form action="/search" method="GET" class="search-bar">
+      <input 
+        type="text" 
+        name="q" 
+        placeholder="Search blogs..." 
+        value="<%= typeof query !== 'undefined' ? query : '' %>"
+      >
+    </form>
+
+    <% if (!blogs || blogs.length === 0) { %>
+
+      <div class="empty-state">
+        <i class="bi bi-journal-text"></i>
+        <h3>No blogs found</h3>
+        <p>Try searching for something else.</p>
+      </div>
+
+    <% } else { %>
+
+      <div class="blog-list">
+
+        <% blogs.forEach(blog => { %>
+
+        <article class="blog-card">
+
+          <!-- Voting -->
+          <div class="vote-box">
+
+            <button class="vote-btn upvote" data-id="<%= blog.id %>">
+              ▲
+            </button>
+
+            <span class="vote-score">
+              <%= blog.score %>
+            </span>
+
+            <button class="vote-btn downvote" data-id="<%= blog.id %>">
+              ▼
+            </button>
+
+          </div>
+
+          <!-- Blog content -->
+          <div class="blog-content">
+
+            <h2>
+              <a href="/blogs/<%= blog.id %>">
+                <%= blog.title %>
+              </a>
+            </h2>
+
+            <p class="excerpt">
+              <%= blog.content.length > 300 
+                ? blog.content.substring(0,300) + "…" 
+                : blog.content %>
+            </p>
+
+            <div class="blog-meta">
+              by <strong><%= blog.username %></strong>
+            </div>
+
+          </div>
+
+        </article>
+
+        <% }) %>
+
+      </div>
+
+    <% } %>
+
+  </div>
+</section>
+
+
+<script>
+
+/* Voting */
+
+const voteButtons = document.querySelectorAll(".vote-btn");
+
+voteButtons.forEach(btn => {
+
+  btn.addEventListener("click", async () => {
+
+    const blogId = btn.dataset.id;
+    const voteType = btn.classList.contains("upvote") ? 1 : -1;
+
+    try{
+
+      const res = await fetch("/vote",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          blogId,
+          voteType
+        })
+      });
+
+      if(res.ok){
+        location.reload();
+      }
+
+    }catch(err){
+      console.error(err);
+    }
+
+  });
+
+});
+
+</script>
+
+<%- include("partials/footer") %>
