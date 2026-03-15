@@ -368,20 +368,24 @@ app.post("/publish/:id", authenticateToken, async (req, res) => {
 });
 
 app.post("/unpublish/:id", authenticateToken, async (req, res) => {
-  try {
-    const blogId = req.params.id;
+    try {
+        const blogId = req.params.id;
 
-    await pool.query(
-      "UPDATE blogs SET published = FALSE, published_at = NULL WHERE id=$1 AND user_id=$2",
-      [blogId, req.userId]
-    );
+        await pool.query(
+            "UPDATE blogs SET published = FALSE, published_at = NULL WHERE id=$1 AND user_id=$2",
+            [blogId, req.userId]
+        );
 
-    res.redirect("/main");
+        await pool.query(
+            "DELETE FROM blog_votes WHERE blog_id=$1", [blogId]
+        );
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Server error");
-  }
+        res.redirect("/main");
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Server error");
+    }
 });
 
 app.post('/edit/:id', authenticateToken, async (req, res) => {
