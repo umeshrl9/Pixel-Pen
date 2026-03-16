@@ -28,6 +28,7 @@ const pool = new Pool({
 
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(cookieParser());
 app.use(passport.initialize());
 
@@ -477,6 +478,71 @@ app.post('/delete', authenticateToken, async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).send("Server error while deleting blog");
+    }
+});
+
+app.post("/vote", authenticateToken, async (req, res) => {
+    const { blogId, voteType } = req.body;
+    const userId = req.userId;
+
+    try {
+
+        let userVote = 0; // final vote state
+
+        const existingVote = await pool.query(
+            "SELECT vote_type FROM blog_votes WHERE user_id=$1 AND blog_id=$2",
+            [userId, blogId]
+        );
+
+        if (existingVote.rows.length === 0) {
+
+            // new vote
+            await pool.query(
+                "INSERT INTO blog_votes (user_id, blog_id, vote_type) VALUES ($1,$2,$3)",
+                [userId, blogId, voteType]
+            );
+
+            userVote = voteType;
+
+        } else {
+
+            const currentVote = existingVote.rows[0].vote_type;
+
+            if (currentVote == voteType) {
+
+                // remove vote
+                await pool.query(
+                    "DELETE FROM blog_votes WHERE user_id=$1 AND blog_id=$2",
+                    [userId, blogId]
+                );
+
+                userVote = 0;
+
+            } else {
+
+                // switch vote
+                await pool.query(
+                    "UPDATE blog_votes SET vote_type=$3 WHERE user_id=$1 AND blog_id=$2",
+                    [userId, blogId, voteType]
+                );
+
+                userVote = voteType;
+            }
+        }
+
+        const scoreResult = await pool.query(
+            "SELECT COALESCE(SUM(vote_type),0) AS score FROM blog_votes WHERE blog_id=$1",
+            [blogId]
+        );
+
+        res.json({
+            score: parseInt(scoreResult.rows[0].score),
+            userVote: userVote
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Vote failed" });
     }
 });
 

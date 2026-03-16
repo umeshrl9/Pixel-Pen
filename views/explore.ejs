@@ -35,12 +35,11 @@
 
                                 <!-- VOTES -->
                                 <div class="vote-column">
-
                                     <button class="vote-btn upvote" data-id="<%= blog.id %>">
                                         <i class="bi bi-caret-up-fill"></i>
                                     </button>
 
-                                    <span class="vote-score">
+                                    <span class="vote-score" data-id="<%= blog.id %>">
                                         <%= blog.score %>
                                     </span>
 
@@ -100,6 +99,27 @@
                 const blogId = btn.dataset.id;
                 const voteType = btn.classList.contains("upvote") ? 1 : -1;
 
+                const scoreEl = document.querySelector(`.vote-score[data-id="${blogId}"]`);
+                let currentScore = parseInt(scoreEl.textContent);
+
+                /* -- OPTIMISTIC UPDATE --- */
+
+                scoreEl.textContent = currentScore + voteType;
+
+                const column = btn.closest(".vote-column");
+                const upBtn = column.querySelector(".upvote");
+                const downBtn = column.querySelector(".downvote");
+
+                if (voteType === 1) {
+                    upBtn.classList.add("active-up");
+                } else {
+                    downBtn.classList.add("active-down");
+                }
+
+                /* --- SERVER REQUEST --- */
+
+
+
                 try {
 
                     const res = await fetch("/vote", {
@@ -113,11 +133,32 @@
                         })
                     });
 
-                    if (res.ok) {
-                        location.reload();
+                    if (!res.ok) {
+                        throw new Error("Vote Failed");
+                    }
+
+                    const data = await res.json();
+
+                    scoreEl.textContent = data.score;
+
+                    upBtn.classList.remove("active-up");
+                    downBtn.classList.remove("active-down");
+
+                    if (data.userVote === 1) {
+                        upBtn.classList.add("active-up");
+                    }
+
+                    if (data.userVote === -1) {
+                        downBtn.classList.add("active-down");
                     }
 
                 } catch (err) {
+                    /* revert optimistic change */
+
+                    scoreEl.textContent = currentScore;
+                    upBtn.classList.remove("active-up");
+                    downBtn.classList.remove("active-down");
+
                     console.error(err);
                 }
 
