@@ -339,20 +339,26 @@ app.get('/edit/:id', authenticateToken, async (req, res) => {
     }
 });
 
-app.get("/explore", async (req, res) => {
+app.get("/explore", authenticateToken, async (req, res) => {
+    const userId = req.userId;
+
     const result = await pool.query(
         `SELECT
-                blogs.*,
-                users.username,
-                users.profile_picture,
-                COALESCE(SUM(blog_votes.vote_type), 0) AS score
-            FROM blogs 
-            JOIN users ON blogs.user_id = users.id
-            LEFT JOIN blog_votes ON blogs.id = blog_votes.blog_id
-            WHERE blogs.published = TRUE
-            GROUP BY blogs.id, users.username, users.profile_picture
-            `
+            blogs.*,
+            users.username,
+            users.profile_picture,
+            COALESCE(SUM(blog_votes.vote_type), 0) AS score,
+            MAX(CASE WHEN blog_votes.user_id = $1 THEN blog_votes.vote_type ELSE 0 END) AS user_vote
+        FROM blogs 
+        JOIN users ON blogs.user_id = users.id
+        LEFT JOIN blog_votes ON blogs.id = blog_votes.blog_id
+        WHERE blogs.published = TRUE
+        GROUP BY blogs.id, users.username, users.profile_picture
+        `,
+        [userId]
     );
+
+    console.log(result.rows);
 
     res.render("explore", { blogs: result.rows });
 });

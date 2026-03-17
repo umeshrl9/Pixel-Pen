@@ -1,171 +1,198 @@
 <%- include("partials/header", { title: "Explore | Pixel & Pen" , css: ["/styles/mainPage.css"] }) %>
 
-    <section class="dashboard">
-        <div class="dashboard-inner">
+<section class="dashboard">
+    <div class="dashboard-inner">
 
-            <!-- Header -->
-            <div class="dashboard-header">
-                <div>
-                    <h1>Explore</h1>
-                    <p>Discover blogs shared by the community.</p>
-                </div>
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div>
+                <h1>Explore</h1>
+                <p>Discover blogs shared by the community.</p>
+            </div>
+        </div>
+
+        <!-- Search -->
+        <form action="/search" method="GET" class="search-bar">
+            <input type="text" name="q" placeholder="Search blogs..."
+                value="<%= typeof query !== 'undefined' ? query : '' %>">
+        </form>
+
+        <% if (!blogs || blogs.length === 0) { %>
+
+            <div class="empty-state">
+                <i class="bi bi-journal-text"></i>
+                <h3>No blogs found</h3>
+                <p>Try searching for something else.</p>
             </div>
 
-            <!-- Search (Backend) -->
-            <form action="/search" method="GET" class="search-bar">
-                <input type="text" name="q" placeholder="Search blogs..."
-                    value="<%= typeof query !== 'undefined' ? query : '' %>">
-            </form>
+        <% } else { %>
 
-            <% if (!blogs || blogs.length===0) { %>
+        <div class="blog-list">
 
-                <div class="empty-state">
-                    <i class="bi bi-journal-text"></i>
-                    <h3>No blogs found</h3>
-                    <p>Try searching for something else.</p>
+            <% blogs.forEach(blog => { %>
+
+            <article class="explore-card">
+
+                <!-- VOTES -->
+                <div class="vote-column" data-user-vote="<%= blog.user_vote %>">
+
+                    <button class="vote-btn upvote <%= blog.user_vote === 1 ? 'active-up' : '' %>" data-id="<%= blog.id %>">
+                        <i class="bi bi-caret-up-fill"></i>
+                    </button>
+
+                    <span class="vote-score" data-id="<%= blog.id %>">
+                        <%= blog.score %>
+                    </span>
+
+                    <button class="vote-btn downvote <%= blog.user_vote === -1 ? 'active-down' : '' %>" data-id="<%= blog.id %>">
+                        <i class="bi bi-caret-down-fill"></i>
+                    </button>
+
                 </div>
 
-                <% } else { %>
+                <!-- CONTENT -->
+                <div class="explore-content">
 
-                    <div class="blog-list">
-
-                        <% blogs.forEach(blog=> { %>
-
-                            <article class="explore-card">
-
-                                <!-- VOTES -->
-                                <div class="vote-column">
-                                    <button class="vote-btn upvote" data-id="<%= blog.id %>">
-                                        <i class="bi bi-caret-up-fill"></i>
-                                    </button>
-
-                                    <span class="vote-score" data-id="<%= blog.id %>">
-                                        <%= blog.score %>
-                                    </span>
-
-                                    <button class="vote-btn downvote" data-id="<%= blog.id %>">
-                                        <i class="bi bi-caret-down-fill"></i>
-                                    </button>
-
-                                </div>
-
-
-                                <!-- CONTENT -->
-                                <div class="explore-content">
-
-                                    <div class="post-meta">
-                                        <img src="<%= blog.profile_picture || '/images/default-avatar.png' %>"
-                                            class="avatar">
-                                        <span class="username">
-                                            <%= blog.username %>
-                                        </span>
-                                    </div>
-
-                                    <h2>
-                                        <a href="/blogs/<%= blog.id %>">
-                                            <%= blog.title %>
-                                        </a>
-                                    </h2>
-
-                                    <p class="excerpt">
-                                        <%= blog.content.length> 260 ? blog.content.substring(0,260) + "..." :
-                                            blog.content %>
-                                    </p>
-
-                                </div>
-
-                            </article>
-
-                            <% }) %>
-
+                    <div class="post-meta">
+                        <img src="<%= blog.profile_picture || '/images/default-avatar.png' %>" class="avatar">
+                        <span class="username"><%= blog.username %></span>
                     </div>
 
-                    <% } %>
+                    <h2>
+                        <a href="/blogs/<%= blog.id %>">
+                            <%= blog.title %>
+                        </a>
+                    </h2>
+
+                    <p class="excerpt">
+                        <%= blog.content.length > 260 
+                            ? blog.content.substring(0, 260) + "..." 
+                            : blog.content %>
+                    </p>
+
+                </div>
+
+            </article>
+
+            <% }) %>
 
         </div>
-    </section>
 
+        <% } %>
 
-    <script>
+    </div>
+</section>
 
-        /* Voting */
+<script>
+/* =========================
+   REDDIT-STYLE VOTING LOGIC
+   ========================= */
 
-        const voteButtons = document.querySelectorAll(".vote-btn");
+const voteButtons = document.querySelectorAll(".vote-btn");
 
-        voteButtons.forEach(btn => {
+voteButtons.forEach(btn => {
 
-            btn.addEventListener("click", async () => {
+    btn.addEventListener("click", async () => {
 
-                const blogId = btn.dataset.id;
-                const voteType = btn.classList.contains("upvote") ? 1 : -1;
+        const blogId = btn.dataset.id;
+        const column = btn.closest(".vote-column");
 
-                const scoreEl = document.querySelector(`.vote-score[data-id="${blogId}"]`);
-                let currentScore = parseInt(scoreEl.textContent);
+        const upBtn = column.querySelector(".upvote");
+        const downBtn = column.querySelector(".downvote");
+        const scoreEl = column.querySelector(".vote-score");
 
-                /* -- OPTIMISTIC UPDATE --- */
+        let currentScore = parseInt(scoreEl.textContent);
+        let currentUserVote = parseInt(column.dataset.userVote);
 
-                scoreEl.textContent = currentScore + voteType;
+        const clickedVote = btn.classList.contains("upvote") ? 1 : -1;
 
-                const column = btn.closest(".vote-column");
-                const upBtn = column.querySelector(".upvote");
-                const downBtn = column.querySelector(".downvote");
+        /* =========================
+           DETERMINE NEW STATE
+        ========================= */
 
-                if (voteType === 1) {
-                    upBtn.classList.add("active-up");
-                } else {
-                    downBtn.classList.add("active-down");
-                }
+        let newUserVote;
+        let scoreChange = 0;
 
-                /* --- SERVER REQUEST --- */
+        if (currentUserVote === clickedVote) {
+            // TOGGLE OFF
+            newUserVote = 0;
+            scoreChange = -clickedVote;
+        } else {
+            // SWITCH OR NEW VOTE
+            newUserVote = clickedVote;
+            scoreChange = clickedVote - currentUserVote;
+        }
 
+        /* =========================
+           OPTIMISTIC UPDATE
+        ========================= */
 
+        scoreEl.textContent = currentScore + scoreChange;
+        column.dataset.userVote = newUserVote;
 
-                try {
+        // reset UI
+        upBtn.classList.remove("active-up");
+        downBtn.classList.remove("active-down");
 
-                    const res = await fetch("/vote", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            blogId,
-                            voteType
-                        })
-                    });
+        if (newUserVote === 1) upBtn.classList.add("active-up");
+        if (newUserVote === -1) downBtn.classList.add("active-down");
 
-                    if (!res.ok) {
-                        throw new Error("Vote Failed");
-                    }
+        // disable buttons temporarily
+        upBtn.disabled = true;
+        downBtn.disabled = true;
 
-                    const data = await res.json();
+        /* =========================
+           SERVER REQUEST
+        ========================= */
 
-                    scoreEl.textContent = data.score;
-
-                    upBtn.classList.remove("active-up");
-                    downBtn.classList.remove("active-down");
-
-                    if (data.userVote === 1) {
-                        upBtn.classList.add("active-up");
-                    }
-
-                    if (data.userVote === -1) {
-                        downBtn.classList.add("active-down");
-                    }
-
-                } catch (err) {
-                    /* revert optimistic change */
-
-                    scoreEl.textContent = currentScore;
-                    upBtn.classList.remove("active-up");
-                    downBtn.classList.remove("active-down");
-
-                    console.error(err);
-                }
-
+        try {
+            const res = await fetch("/vote", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    blogId,
+                    voteType: newUserVote   // IMPORTANT: send new state
+                })
             });
 
-        });
+            if (!res.ok) throw new Error("Vote failed");
 
-    </script>
+            const data = await res.json();
 
-    <%- include("partials/footer") %>
+            // sync with server
+            scoreEl.textContent = data.score;
+            column.dataset.userVote = data.userVote;
+
+            upBtn.classList.remove("active-up");
+            downBtn.classList.remove("active-down");
+
+            if (data.userVote === 1) upBtn.classList.add("active-up");
+            if (data.userVote === -1) downBtn.classList.add("active-down");
+
+        } catch (err) {
+
+            // revert on failure
+            scoreEl.textContent = currentScore;
+            column.dataset.userVote = currentUserVote;
+
+            upBtn.classList.remove("active-up");
+            downBtn.classList.remove("active-down");
+
+            if (currentUserVote === 1) upBtn.classList.add("active-up");
+            if (currentUserVote === -1) downBtn.classList.add("active-down");
+
+            console.error(err);
+        }
+
+        // re-enable buttons
+        upBtn.disabled = false;
+        downBtn.disabled = false;
+
+    });
+
+});
+</script>
+
+<%- include("partials/footer") %>
