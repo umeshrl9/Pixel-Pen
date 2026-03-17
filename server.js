@@ -391,6 +391,49 @@ app.get("/explore", authenticateToken, async (req, res) => {
     res.render("explore", { blogs: result.rows });
 });
 
+app.get("/user/:username", authenticateToken, async (req, res) => {
+    const { username } = req.params;
+
+    try {
+        // 1. Get user
+        const userResult = await pool.query(
+            "SELECT * FROM users WHERE username = $1",
+            [username]
+        );
+
+        if (userResult.rows.length === 0) {
+            return res.status(404).render("message", {
+                errorHeading: "User not found",
+                message: "This user does not exist."
+            });
+        }
+
+        const user = userResult.rows[0];
+
+        // 2. Get blogs of user
+        const blogsResult = await pool.query(
+            `SELECT
+                blogs.*,
+                COALESCE(SUM(blog_votes.vote_type), 0) AS score
+            FROM blogs
+            LEFT JOIN blog_votes ON blogs.id = blog_votes.blog_id
+            WHERE blogs.user_id = $1 AND blogs.published = TRUE
+            GROUP BY blogs.id
+            ORDER BY blogs.published_at DESC`,
+            [user.id]
+        );
+
+        res.render("user", {
+            user,
+            blogs: blogsResult.rows
+        });
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Server error");
+    }
+});
+
 app.post("/publish/:id", authenticateToken, async (req, res) => {
     const blogId = req.params.id;
 
@@ -442,7 +485,7 @@ app.post('/edit/:id', authenticateToken, async (req, res) => {
             [title, content, blogID, req.userId]
         );
 
-        res.redirect('/main');
+        res.redirect('/blog/:id');
     } catch (err) {
         console.error(err);
         res.status(500).send("Server error while updating blog");

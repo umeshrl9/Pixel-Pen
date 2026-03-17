@@ -1,0 +1,100 @@
+<%- include("partials/header", { title: user.username + " | Pixel & Pen", css: ["/styles/profile.css", "/styles/mainPage.css"] }) %>
+
+<section class="profile-page">
+  <div class="profile-inner">
+
+    <!-- Header -->
+    <div class="profile-header">
+      <h1><%= user.username %>'s Profile</h1>
+      <p>Explore their writings.</p>
+    </div>
+
+    <div class="profile-card">
+
+      <!-- Avatar -->
+      <div class="profile-avatar" style="display:flex; flex-direction:column;">
+        <div class="avatar-wrapper" style="margin:auto;">
+
+          <% if(user.profile_picture){ %>
+            <img src="<%= user.profile_picture %>" alt="profile picture">
+          <% } else { %>
+            <div class="avatar-placeholder">
+              <%= user.username.charAt(0).toUpperCase() %>
+            </div>
+          <% } %>
+
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div class="profile-info">
+
+        <div class="info-group">
+          <label>Name</label>
+          <p><%= user.name || "Not added yet" %></p>
+        </div>
+
+        <div class="info-group">
+          <label>Username</label>
+          <p>@<%= user.username %></p>
+        </div>
+
+        <div class="info-group">
+          <label>Bio</label>
+          <p><%= user.bio || "No bio yet." %></p>
+        </div>
+
+        <div class="info-group">
+          <label>Location</label>
+          <p><%= user.location || "Not specified" %></p>
+        </div>
+
+        <div class="info-group">
+          <label>Website</label>
+          <p>
+            <% if(user.website){ %>
+              <a href="<%= user.website %>" target="_blank"><%= user.website %></a>
+            <% } else { %>
+              Not provided
+            <% } %>
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BLOGS SECTION -->
+    <div class="user-blogs">
+
+      <h2>Published Blogs</h2>
+
+      <% if(blogs.length === 0){ %>
+        <p>This user hasn't published anything yet.</p>
+      <% } %>
+
+      <% blogs.forEach(blog => { %>
+        <div class="blog-card">
+
+          <h3>
+            <a href="/view/<%= blog.id %>">
+              <%= blog.title %>
+            </a>
+          </h3>
+
+          <p class="blog-preview">
+            <%= blog.content.substring(0, 150) %>...
+          </p>
+
+          <div class="blog-meta">
+            <span>Score: <%= blog.score %></span>
+          </div>
+
+        </div>
+      <% }) %>
+
+    </div>
+
+  </div>
+</section>
+
+<%- include("partials/footer") %>
