@@ -318,6 +318,35 @@ app.get('/blogs/:id', authenticateToken, async (req, res) => {
     }
 });
 
+app.get("/view/:id", authenticateToken, async (req, res) => {
+    const blogId = req.params.id;
+    const userId = req.userId;
+
+    const result = await pool.query(
+        `SELECT
+            blogs.*,
+            users.username,
+            users.profile_picture,
+            COALESCE(SUM(blog_votes.vote_type), 0) AS score,
+            MAX(CASE WHEN blog_votes.user_id = $2 THEN blog_votes.vote_type ELSE 0 END) AS user_vote
+        FROM blogs
+        JOIN users ON blogs.user_id = users.id
+        LEFT JOIN blog_votes ON blogs.id = blog_votes.blog_id
+        WHERE blogs.id = $1
+        GROUP BY blogs.id, users.username, users.profile_picture`,
+        [blogId, userId]
+    );
+
+    if (result.rows.length === 0) {
+        return res.send("Blog not found");
+    }
+
+    res.render("view", {
+        blog: result.rows[0],
+        currentUserId: userId
+    });
+});
+
 app.get('/edit/:id', authenticateToken, async (req, res) => {
     const blogID = req.params.id;
 
@@ -358,7 +387,6 @@ app.get("/explore", authenticateToken, async (req, res) => {
         [userId]
     );
 
-    console.log(result.rows);
 
     res.render("explore", { blogs: result.rows });
 });
@@ -371,7 +399,7 @@ app.post("/publish/:id", authenticateToken, async (req, res) => {
         [blogId, req.userId]
     );
 
-    res.redirect("/main");
+    res.redirect("/view/:id");
 });
 
 app.post("/unpublish/:id", authenticateToken, async (req, res) => {

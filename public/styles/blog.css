@@ -170,3 +170,145 @@
     opacity: 1;
   }
 }
+
+/* =========================
+   PAGE LAYOUT
+========================= */
+
+.reading-page {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.reading-inner {
+    width: 100%;
+    max-width: 800px;
+}
+
+/* =========================
+   AUTHOR SECTION
+========================= */
+
+.reading-author {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.reading-author .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.reading-author span {
+    font-weight: 600;
+    font-size: 14px;
+    color: #555;
+}
+
+/* =========================
+   TITLE
+========================= */
+
+.reading-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+/* =========================
+   VOTING (HORIZONTAL)
+========================= */
+
+.reading-votes {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.vote-btn {
+    border: none;
+    background: #f1f1f1;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.vote-btn:hover {
+    background: #e0e0e0;
+}
+
+.vote-score {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+/* ACTIVE STATES */
+
+.active-up {
+    background: #ffebe6;
+    color: #ff4500;
+}
+
+.active-down {
+    background: #e6f0ff;
+    color: #1d4ed8;
+}
+
+/* =========================
+   CONTENT
+========================= */
+
+.reading-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #222;
+    margin-bottom: 40px;
+}
+
+/* =========================
+   ACTION BUTTONS
+========================= */
+
+.reading-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.btn-primary {
+    background: black;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+.btn-danger {
+    background: #e63946;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+/* =========================
+   BACK LINK
+========================= */
+
+.back-link {
+    text-decoration: none;
+    color: #555;
+    font-size: 14px;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
