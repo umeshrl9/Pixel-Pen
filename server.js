@@ -58,34 +58,69 @@ app.use(async (req, res, next) => {
 })
 
 passport.use(
-    new GoogleStrategy({
-        clientID: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: process.env.GOOGLE_REDIRECT_URI
-    },
-        async (accessToken, refreshToken, profile, done) => {
-            try {
-                const googleId = profile.id;
-                const email = profile.emails[0].value;
+  new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.GOOGLE_REDIRECT_URI
+  },
+  async (accessToken, refreshToken, profile, done) => {
+    try {
+      const googleId = profile.id;
+      const email = profile.emails[0].value;
+      const name = profile.displayName;
+      let user = await pool.query(
+        "SELECT * FROM users WHERE google_id = $1",
+        [googleId]
+      );
 
-                let user = await pool.query(
-                    "SELECT * FROM USERS WHERE google_id = $1", [googleId]
-                );
+      if (user.rows.length === 0) {
 
-                if (user.rows.length === 0) {
-                    user = await pool.query(
-                        `INSERT INTO users(email, google_id, auth_provider)
-                    VALUES ($1, $2, 'google')
-                    RETURNING *`,
-                        [email, googleId]
-                    );
-                }
+        /* Username generation */
+        let base = name
+          ? name.toLowerCase().replace(/\s+/g, "")
+          : email.split("@")[0];
 
-                return done(null, user.rows[0]);
-            } catch (err) {
-                return done(err, null);
-            }
-        })
+        base = base.replace(/[^a-z0-9]/g, "").slice(0, 15);
+
+        function generateSuffix() {
+          return Math.random().toString(36).substring(2, 6);
+        }
+
+        let username = `${base}_${generateSuffix()}`;
+
+        let existing = await pool.query(
+          "SELECT 1 FROM users WHERE username = $1",
+          [username]
+        );
+
+        while (existing.rows.length > 0) {
+          username = `${base}_${generateSuffix()}`;
+          existing = await pool.query(
+            "SELECT 1 FROM users WHERE username = $1",
+            [username]
+          );
+        }
+
+        user = await pool.query(
+          `INSERT INTO users (email, google_id, auth_provider, username, name, profile_picture)
+           VALUES ($1, $2, 'google', $3, $4, $5)
+           RETURNING *`,
+          [
+            email,
+            googleId,
+            username,
+            name,
+            profile.photos?.[0]?.value || null
+          ]
+        );
+      }
+
+      return done(null, user.rows[0]);
+
+    } catch (err) {
+      return done(err, null);
+    }
+  })
 );
 
 const authenticateToken = (req, res, next) => {
