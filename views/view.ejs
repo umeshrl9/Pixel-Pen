@@ -13,7 +13,7 @@
     <!-- AUTHOR -->
     <div class="reading-author">
       <img src="<%= blog.profile_picture || '/images/default-avatar.png' %>" class="avatar">
-      <span><%= blog.username %></span>
+      <a href="/user/<%= blog.username %>" style="text-decoration: none;"><span><%= blog.username %></span></a>
     </div>
 
     <!-- TITLE -->

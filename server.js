@@ -413,12 +413,9 @@ app.get("/user/:username", authenticateToken, async (req, res) => {
         // 2. Get blogs of user
         const blogsResult = await pool.query(
             `SELECT
-                blogs.*,
-                COALESCE(SUM(blog_votes.vote_type), 0) AS score
+                *
             FROM blogs
-            LEFT JOIN blog_votes ON blogs.id = blog_votes.blog_id
             WHERE blogs.user_id = $1 AND blogs.published = TRUE
-            GROUP BY blogs.id
             ORDER BY blogs.published_at DESC`,
             [user.id]
         );
@@ -442,7 +439,7 @@ app.post("/publish/:id", authenticateToken, async (req, res) => {
         [blogId, req.userId]
     );
 
-    res.redirect("/view/:id");
+    res.redirect(`/view/${blogId}`);
 });
 
 app.post("/unpublish/:id", authenticateToken, async (req, res) => {
