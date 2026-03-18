@@ -28,6 +28,21 @@
   margin-bottom: 0.4rem;
 }
 
+.user-blogs h2{
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: #111;
+  margin-bottom: 1rem;
+  margin-top: 2rem;
+}
+
+.user-blogs p{
+  font-family: 'Inter', sans-serif;
+  font-size: 1.05rem;
+  color: #555;
+}
+
+
 .dashboard-header p {
   color: #555;
   font-size: 1.05rem;
