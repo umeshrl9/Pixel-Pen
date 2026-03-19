@@ -441,6 +441,30 @@ app.get("/explore", authenticateToken, async (req, res) => {
     }
 });
 
+app.get("/search", authenticateToken, async (req, res) => {
+    const query = req.query.query || "";
+
+    try {
+        const result = await pool.query(
+            `SELECT b.*, u.username, u.profile_picture
+             FROM blogs b
+             JOIN users u ON b.user_id = u.id
+             WHERE (b.title ILIKE $1 OR b.content ILIKE $1)
+             AND b.published = TRUE
+             ORDER BY b.published_at DESC
+             LIMIT 20`,
+            [`%${query}%`]
+        );
+
+        const blogs = result.rows; // No need for score/user_vote since search page doesn’t show votes
+
+        res.render("search", { blogs, query });
+    } catch (err) {
+        console.error(err);
+        res.render("search", { blogs: [], query });
+    }
+});
+
 app.get("/user/:username", authenticateToken, async (req, res) => {
     const { username } = req.params;
 

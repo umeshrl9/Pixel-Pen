@@ -1,0 +1,52 @@
+<%- include("partials/header", { title: "Search Results | Pixel & Pen" , css: ["/styles/mainPage.css"] }) %>
+
+<section class="dashboard">
+    <div class="dashboard-inner">
+
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div>
+                <h1>Search Results</h1>
+                <p>Showing results for: "<%= query %>"</p>
+            </div>
+        </div>
+
+        <!-- Search again -->
+        <form action="/search" method="GET" class="search-bar">
+            <input type="text" name="query" placeholder="Search blogs..." value="<%= query %>">
+            <button type="submit"><i class="bi bi-search"></i></button>
+        </form>
+
+        <% if (!blogs || blogs.length === 0) { %>
+            <div class="empty-state">
+                <i class="bi bi-journal-text"></i>
+                <h3>No blogs found</h3>
+                <p>Try searching for something else.</p>
+            </div>
+        <% } else { %>
+            <div id="blog-list" class="blog-list">
+                <% blogs.forEach(blog => { %>
+                    <article class="explore-card">
+
+                        <!-- CONTENT -->
+                        <div class="explore-content">
+                            <div class="post-meta">
+                                <img src="<%= blog.profile_picture || '/images/default-avatar.png' %>" class="avatar">
+                                <a href="/user/<%= blog.username %>" class="username"><%= blog.username %></a>
+                            </div>
+                            <h2>
+                                <a href="/view/<%= blog.id %>"><%= blog.title %></a>
+                            </h2>
+                            <p class="excerpt">
+                                <%= blog.content.length > 260 ? blog.content.substring(0, 260) + "..." : blog.content %>
+                            </p>
+                        </div>
+                    </article>
+                <% }) %>
+            </div>
+        <% } %>
+
+    </div>
+</section>
+
+<%- include("partials/footer") %>
