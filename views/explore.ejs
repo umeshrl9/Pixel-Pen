@@ -1,203 +1,199 @@
 <%- include("partials/header", { title: "Explore | Pixel & Pen" , css: ["/styles/mainPage.css"] }) %>
 
-    <section class="dashboard">
-        <div class="dashboard-inner">
+<section class="dashboard">
+    <div class="dashboard-inner">
 
-            <!-- Header -->
-            <div class="dashboard-header">
-                <div>
-                    <h1>Explore</h1>
-                    <p>Discover blogs shared by the community.</p>
-                </div>
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div>
+                <h1>Explore</h1>
+                <p>Discover blogs shared by the community.</p>
+            </div>
+        </div>
+
+        <!-- Search -->
+        <form action="/search" method="GET" class="search-bar">
+            <input type="text" name="q" placeholder="Search blogs..."
+                value="<%= typeof query !== 'undefined' ? query : '' %>">
+        </form>
+
+        <% if (!blogs || blogs.length===0) { %>
+            <div class="empty-state">
+                <i class="bi bi-journal-text"></i>
+                <h3>No blogs found</h3>
+                <p>Try searching for something else.</p>
+            </div>
+        <% } else { %>
+            <div id="blog-list" class="blog-list">
+                <% blogs.forEach(blog => { %>
+                    <article class="explore-card">
+                        <!-- VOTES -->
+                        <div class="vote-column" data-user-vote="<%= blog.user_vote %>">
+                            <button class="vote-btn upvote <%= blog.user_vote === 1 ? 'active-up' : '' %>" data-id="<%= blog.id %>">
+                                <i class="bi bi-caret-up-fill"></i>
+                            </button>
+                            <span class="vote-score" data-id="<%= blog.id %>">
+                                <%= blog.score %>
+                            </span>
+                            <button class="vote-btn downvote <%= blog.user_vote === -1 ? 'active-down' : '' %>" data-id="<%= blog.id %>">
+                                <i class="bi bi-caret-down-fill"></i>
+                            </button>
+                        </div>
+
+                        <!-- CONTENT -->
+                        <div class="explore-content">
+                            <div class="post-meta">
+                                <img src="<%= blog.profile_picture || '/images/default-avatar.png' %>" class="avatar">
+                                <a href="/user/<%= blog.username %>" class="username"><%= blog.username %></a>
+                            </div>
+                            <h2>
+                                <a href="/view/<%= blog.id %>"><%= blog.title %></a>
+                            </h2>
+                            <p class="excerpt">
+                                <%= blog.content.length > 260 ? blog.content.substring(0, 260) + "..." : blog.content %>
+                            </p>
+                        </div>
+                    </article>
+                <% }) %>
             </div>
 
-            <!-- Search -->
-            <form action="/search" method="GET" class="search-bar">
-                <input type="text" name="q" placeholder="Search blogs..."
-                    value="<%= typeof query !== 'undefined' ? query : '' %>">
-            </form>
+            <!-- Loader -->
+            <div id="loader" style="text-align:center; padding:20px; display:none;">Loading...</div>
+        <% } %>
 
-            <% if (!blogs || blogs.length===0) { %>
+    </div>
+</section>
 
-                <div class="empty-state">
-                    <i class="bi bi-journal-text"></i>
-                    <h3>No blogs found</h3>
-                    <p>Try searching for something else.</p>
-                </div>
+<script>
+let page = 2; // first page already loaded
+let loading = false;
+const blogList = document.getElementById("blog-list");
 
-                <% } else { %>
+// Voting: event delegation works for new blogs too
+blogList.addEventListener("click", async (e) => {
+    const btn = e.target.closest(".vote-btn");
+    if (!btn) return;
 
-                    <div class="blog-list">
+    const blogId = btn.dataset.id;
+    const column = btn.closest(".vote-column");
+    const upBtn = column.querySelector(".upvote");
+    const downBtn = column.querySelector(".downvote");
+    const scoreEl = column.querySelector(".vote-score");
 
-                        <% blogs.forEach(blog=> { %>
+    let currentScore = parseInt(scoreEl.textContent);
+    let currentUserVote = parseInt(column.dataset.userVote);
+    const clickedVote = btn.classList.contains("upvote") ? 1 : -1;
 
-                            <article class="explore-card">
+    let newUserVote = (currentUserVote === clickedVote) ? 0 : clickedVote;
+    let scoreChange = newUserVote - currentUserVote;
 
-                                <!-- VOTES -->
-                                <div class="vote-column" data-user-vote="<%= blog.user_vote %>">
+    // Optimistic UI update
+    scoreEl.textContent = currentScore + scoreChange;
+    column.dataset.userVote = newUserVote;
+    upBtn.classList.remove("active-up");
+    downBtn.classList.remove("active-down");
+    if (newUserVote === 1) upBtn.classList.add("active-up");
+    if (newUserVote === -1) downBtn.classList.add("active-down");
 
-                                    <button class="vote-btn upvote <%= blog.user_vote === 1 ? 'active-up' : '' %>"
-                                        data-id="<%= blog.id %>">
-                                        <i class="bi bi-caret-up-fill"></i>
-                                    </button>
+    upBtn.disabled = true;
+    downBtn.disabled = true;
 
-                                    <span class="vote-score" data-id="<%= blog.id %>">
-                                        <%= blog.score %>
-                                    </span>
-
-                                    <button class="vote-btn downvote <%= blog.user_vote === -1 ? 'active-down' : '' %>"
-                                        data-id="<%= blog.id %>">
-                                        <i class="bi bi-caret-down-fill"></i>
-                                    </button>
-
-                                </div>
-
-                                <!-- CONTENT -->
-                                <div class="explore-content">
-
-                                    <div class="post-meta">
-                                        <img src="<%= blog.profile_picture || '/images/default-avatar.png' %>"
-                                            class="avatar">
-                                        <a href="/user/<%= blog.username %>" class="username">
-                                            <%= blog.username %>
-                                        </a>
-                                    </div>
-
-                                    <h2>
-                                        <a href="/view/<%= blog.id %>">
-                                            <%= blog.title %>
-                                        </a>
-                                    </h2>
-
-                                    <p class="excerpt">
-                                        <%= blog.content.length> 260
-                                            ? blog.content.substring(0, 260) + "..."
-                                            : blog.content %>
-                                    </p>
-
-                                </div>
-
-                            </article>
-
-                            <% }) %>
-
-                    </div>
-
-                    <% } %>
-
-        </div>
-    </section>
-
-    <script>
-        /* =========================
-           REDDIT-STYLE VOTING LOGIC
-           ========================= */
-
-        const voteButtons = document.querySelectorAll(".vote-btn");
-
-        voteButtons.forEach(btn => {
-
-            btn.addEventListener("click", async () => {
-
-                const blogId = btn.dataset.id;
-                const column = btn.closest(".vote-column");
-
-                const upBtn = column.querySelector(".upvote");
-                const downBtn = column.querySelector(".downvote");
-                const scoreEl = column.querySelector(".vote-score");
-
-                let currentScore = parseInt(scoreEl.textContent);
-                let currentUserVote = parseInt(column.dataset.userVote);
-
-                const clickedVote = btn.classList.contains("upvote") ? 1 : -1;
-
-                /* =========================
-                   DETERMINE NEW STATE
-                ========================= */
-
-                let newUserVote;
-                let scoreChange = 0;
-
-                if (currentUserVote === clickedVote) {
-                    // TOGGLE OFF
-                    newUserVote = 0;
-                    scoreChange = -clickedVote;
-                } else {
-                    // SWITCH OR NEW VOTE
-                    newUserVote = clickedVote;
-                    scoreChange = clickedVote - currentUserVote;
-                }
-
-                /* =========================
-                   OPTIMISTIC UPDATE
-                ========================= */
-
-                scoreEl.textContent = currentScore + scoreChange;
-                column.dataset.userVote = newUserVote;
-
-                // reset UI
-                upBtn.classList.remove("active-up");
-                downBtn.classList.remove("active-down");
-
-                if (newUserVote === 1) upBtn.classList.add("active-up");
-                if (newUserVote === -1) downBtn.classList.add("active-down");
-
-                // disable buttons temporarily
-                upBtn.disabled = true;
-                downBtn.disabled = true;
-
-                /* =========================
-                   SERVER REQUEST
-                ========================= */
-
-                try {
-                    const res = await fetch("/vote", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            blogId,
-                            voteType: newUserVote   // IMPORTANT: send new state
-                        })
-                    });
-
-                    if (!res.ok) throw new Error("Vote failed");
-
-                    const data = await res.json();
-
-                    // sync with server
-                    scoreEl.textContent = data.score;
-                    column.dataset.userVote = data.userVote;
-
-                    upBtn.classList.remove("active-up");
-                    downBtn.classList.remove("active-down");
-
-                    if (data.userVote === 1) upBtn.classList.add("active-up");
-                    if (data.userVote === -1) downBtn.classList.add("active-down");
-
-                } catch (err) {
-
-                    // revert on failure
-                    scoreEl.textContent = currentScore;
-                    column.dataset.userVote = currentUserVote;
-
-                    upBtn.classList.remove("active-up");
-                    downBtn.classList.remove("active-down");
-
-                    if (currentUserVote === 1) upBtn.classList.add("active-up");
-                    if (currentUserVote === -1) downBtn.classList.add("active-down");
-
-                    console.error(err);
-                }
-
-                // re-enable buttons
-                upBtn.disabled = false;
-                downBtn.disabled = false;
-
-            });
-
+    try {
+        const res = await fetch("/vote", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ blogId, voteType: newUserVote })
         });
-    </script>
+        const data = await res.json();
 
-    <%- include("partials/footer") %>
+        // Sync server state
+        scoreEl.textContent = data.score;
+        column.dataset.userVote = data.userVote;
+        upBtn.classList.remove("active-up");
+        downBtn.classList.remove("active-down");
+        if (data.userVote === 1) upBtn.classList.add("active-up");
+        if (data.userVote === -1) downBtn.classList.add("active-down");
+    } catch (err) {
+        // Revert on failure
+        scoreEl.textContent = currentScore;
+        column.dataset.userVote = currentUserVote;
+        upBtn.classList.remove("active-up");
+        downBtn.classList.remove("active-down");
+        if (currentUserVote === 1) upBtn.classList.add("active-up");
+        if (currentUserVote === -1) downBtn.classList.add("active-down");
+        console.error(err);
+    } finally {
+        upBtn.disabled = false;
+        downBtn.disabled = false;
+    }
+});
+
+// Lazy loading on scroll
+async function loadMoreBlogs() {
+    if (loading) return;
+    loading = true;
+    const loader = document.getElementById("loader");
+    loader.style.display = "block";
+
+    try {
+        const res = await fetch(`/explore?page=${page}`, {
+            credentials: "same-origin", // 🔹 important for cookies
+            headers: {
+                "Accept": "application/json"
+            }
+        });
+
+        if (!res.ok) throw new Error("Failed to load blogs");
+        const blogs = await res.json();
+
+        if (blogs.length === 0) {
+            window.removeEventListener("scroll", handleScroll);
+            loader.textContent = "No more blogs.";
+            return;
+        }
+
+        blogs.forEach(blog => {
+            const card = document.createElement("article");
+            card.className = "explore-card";
+            card.innerHTML = `
+                <div class="vote-column" data-user-vote="${blog.user_vote}">
+                    <button class="vote-btn upvote ${blog.user_vote===1 ? 'active-up' : ''}" data-id="${blog.id}">
+                        <i class="bi bi-caret-up-fill"></i>
+                    </button>
+                    <span class="vote-score" data-id="${blog.id}">${blog.score}</span>
+                    <button class="vote-btn downvote ${blog.user_vote===-1 ? 'active-down' : ''}" data-id="${blog.id}">
+                        <i class="bi bi-caret-down-fill"></i>
+                    </button>
+                </div>
+                <div class="explore-content">
+                    <div class="post-meta">
+                        <img src="${blog.profile_picture || '/images/default-avatar.png'}" class="avatar">
+                        <a href="/user/${blog.username}" class="username">${blog.username}</a>
+                    </div>
+                    <h2><a href="/view/${blog.id}">${blog.title}</a></h2>
+                    <p class="excerpt">${blog.content.length > 260 ? blog.content.substring(0, 260) + "..." : blog.content}</p>
+                </div>
+            `;
+            blogList.appendChild(card);
+        });
+
+        page++;
+    } catch (err) {
+        console.error(err);
+        loader.textContent = "Failed to load more blogs.";
+    } finally {
+        loading = false;
+        loader.style.display = "none";
+    }
+}
+
+function handleScroll() {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) {
+        loadMoreBlogs();
+    }
+}
+
+window.addEventListener("scroll", handleScroll);
+</script>
+
+<%- include("partials/footer") %>

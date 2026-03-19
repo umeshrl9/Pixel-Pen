@@ -403,27 +403,42 @@ app.get('/edit/:id', authenticateToken, async (req, res) => {
     }
 });
 
+// explore route
 app.get("/explore", authenticateToken, async (req, res) => {
     const userId = req.userId;
+    const page = parseInt(req.query.page) || 1;
+    const limit = 5;
+    const offset = (page - 1) * limit;
 
-    const result = await pool.query(
-        `SELECT
-            blogs.*,
-            users.username,
-            users.profile_picture,
-            COALESCE(SUM(blog_votes.vote_type), 0) AS score,
-            MAX(CASE WHEN blog_votes.user_id = $1 THEN blog_votes.vote_type ELSE 0 END) AS user_vote
-        FROM blogs 
-        JOIN users ON blogs.user_id = users.id
-        LEFT JOIN blog_votes ON blogs.id = blog_votes.blog_id
-        WHERE blogs.published = TRUE
-        GROUP BY blogs.id, users.username, users.profile_picture
-        `,
-        [userId]
-    );
+    try {
+        const result = await pool.query(
+            `SELECT
+                blogs.*,
+                users.username,
+                users.profile_picture,
+                COALESCE(SUM(blog_votes.vote_type), 0) AS score,
+                MAX(CASE WHEN blog_votes.user_id = $1 THEN blog_votes.vote_type ELSE 0 END) AS user_vote
+            FROM blogs
+            JOIN users ON blogs.user_id = users.id
+            LEFT JOIN blog_votes ON blogs.id = blog_votes.blog_id
+            WHERE blogs.published = TRUE
+            GROUP BY blogs.id, users.username, users.profile_picture
+            ORDER BY blogs.published_at DESC
+            LIMIT $2 OFFSET $3`,
+            [userId, limit, offset]
+        );
 
+        // If AJAX request (lazy load), return JSON
+        if (req.xhr || req.headers.accept.includes("json")) {
+            return res.json(result.rows);
+        }
 
-    res.render("explore", { blogs: result.rows });
+        // Initial render: first page
+        res.render("explore", { blogs: result.rows, query: req.query.q || "" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Server error");
+    }
 });
 
 app.get("/user/:username", authenticateToken, async (req, res) => {
@@ -517,7 +532,7 @@ app.post('/edit/:id', authenticateToken, async (req, res) => {
             [title, content, blogID, req.userId]
         );
 
-        res.redirect('/blog/:id');
+        res.redirect(`/blog/${blogID}`);
     } catch (err) {
         console.error(err);
         res.status(500).send("Server error while updating blog");
