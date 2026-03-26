@@ -9,6 +9,7 @@ import passport from "passport";
 import upload from "./config/multer.js";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import cloudinary from "./config/cloudinary.js";
+import { generateSummary } from "./utils/geminiSummary.js";
 
 const app = express();
 dotenv.config();
@@ -507,10 +508,20 @@ app.get("/user/:username", authenticateToken, async (req, res) => {
 
 app.post("/publish/:id", authenticateToken, async (req, res) => {
     const blogId = req.params.id;
+    
+    const blog = await pool.query("SELECT content FROM blogs WHERE id=$1 AND user_id=$2", [blogId, req.userId]);
+    const content = blog.rows[0].content;
+    const wordCount = content.trim().split(/\s+/).length;
+
+    let summary = null;
+
+    if(wordCount > 500){
+        summary = await generateSummary(content);
+    }
 
     await pool.query(
-        "UPDATE blogs SET published = TRUE, published_at = NOW() WHERE id=$1 AND user_id=$2",
-        [blogId, req.userId]
+        "UPDATE blogs SET published = TRUE, published_at = NOW(), summary=$1 WHERE id=$2 AND user_id=$3",
+        [summary, blogId, req.userId]
     );
 
     res.redirect(`/view/${blogId}`);

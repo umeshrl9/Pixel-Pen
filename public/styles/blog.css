@@ -312,3 +312,40 @@
 .back-link:hover {
     text-decoration: underline;
 }
+
+.reading-summary {
+  margin-top: 40px;
+  padding: 20px 22px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #f8f9ff, #f3f4ff);
+  border: 1px solid #e6e8ff;
+  box-shadow: 0 10px 25px rgba(108, 99, 255, 0.08);
+  transition: all 0.2s ease;
+}
+
+.reading-summary:hover {
+  box-shadow: 0 14px 35px rgba(108, 99, 255, 0.12);
+}
+
+.summary-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #5b5ce2;
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+}
+
+.summary-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.reading-summary p {
+  margin: 0;
+  line-height: 1.65;
+  color: #444;
+  font-size: 15px;
+}
