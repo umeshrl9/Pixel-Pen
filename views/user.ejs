@@ -63,7 +63,7 @@
             <label>Website</label>
             <p>
               <% if(user.website){ %>
-                <a href="<%= user.website %>" target="_blank">
+                <a href="<%= user.website.startsWith('http') ? user.website : 'https://' + user.website %>" target="_blank">
                   <%= user.website %>
                 </a>
                 <% } else { %>
